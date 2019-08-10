@@ -17,6 +17,7 @@ namespace fs{
         closedir(dir);
         return itemList;
     }
+    // https://github.com/AtlasNX/Kosmos-Updater/blob/master/source/FileManager.cpp#L34
     bool writeFile(std::string filename, std::string data) {
         deleteFile(filename);
 
@@ -32,7 +33,7 @@ namespace fs{
 
         return (result == data.size());
     }
-
+    // https://github.com/AtlasNX/Kosmos-Updater/blob/master/source/FileManager.cpp#L50
     bool deleteFile(std::string filename) {
         if (fileExists(filename)) {
             return remove(filename.c_str()) == 0;
@@ -40,7 +41,7 @@ namespace fs{
 
         return false;
     }
-
+    // https://github.com/AtlasNX/Kosmos-Updater/blob/master/source/FileManager.cpp#L58
     bool fileExists(std::string filename) {
         FILE * file = fopen(filename.c_str(), "r");
 
@@ -52,7 +53,6 @@ namespace fs{
 
         return false;
     }
-
     // http://stackoverflow.com/a/11366985
     bool mkpath(std::string path) {
         bool bSuccess = false;
