@@ -8,15 +8,17 @@ namespace ui {
 
     OverviewLayout::OverviewLayout() : pu::ui::Layout() {
         this->logo = new Image(4, 20, "romfs:/logo.png");
-        logo->SetWidth(92);
-        logo->SetHeight(60);
+        this->logo->SetWidth(92);
+        this->logo->SetHeight(60);
         this->SetBackgroundColor(theme.background);
-        topBarRect = new Rectangle(0, 0, 1280, 100, theme.hoverColor);
-
-        this->comicMenu = new Menu(20, 100, 1240, theme.hoverColor, 155, 4);
+        this->topBarRect = new Rectangle(0, 0, 1280, 100, theme.hoverColor);
+        this->comicMenu = new Menu(40, 120, 1200, theme.hoverColor, 150, 4);
+        this->pageInfo = new TextBlock(600, 30, "loading...", 40);
+        this->pageInfo->SetColor(theme.textColor);
         this->Add(comicMenu);
         this->Add(topBarRect);    
-        this->Add(logo);    
+        this->Add(logo);
+        this->Add(pageInfo);
     }
     OverviewLayout::~OverviewLayout(){
         delete this->comicMenu;
@@ -28,15 +30,17 @@ namespace ui {
         this->page = page;
         loadFromLink(web::FORMAT_ALL + std::to_string(page));
     }
-    void OverviewLayout::catShowTagged(int tag, int page){
+    void OverviewLayout::catShowSearch(std::string search, int page){
+        this->searchString = search;
         this->mode = 1;
         this->page = page;
-        loadFromLink(web::FORMAT_TAGGED + std::to_string(tag) + "&page=" + std::to_string(page));
+        loadFromLink(web::FORMAT_SEARCH + search + "&page=" + std::to_string(page));
     }
-    void OverviewLayout::catShowSearch(std::string search, int page){
+    void OverviewLayout::catShowTagged(model::tag tag, int page){
+        this->currentTag = tag;
         this->mode = 2;
         this->page = page;
-        loadFromLink(web::FORMAT_SEARCH + search + "&page=" + std::to_string(page));
+        loadFromLink(web::FORMAT_TAGGED + std::to_string(tag.id) + "&page=" + std::to_string(page));
     }
     void OverviewLayout::loadFromLink(std::string url){
         printf("searching with url: %s\n", url.c_str());
@@ -70,6 +74,15 @@ namespace ui {
         this->maxPage = d["num_pages"].GetInt();
         this->comics = web::getComics(d["result"]);
         loadComics();
+        std::string topStr;
+        switch(mode) {
+            case 0: topStr = "All"; break;
+            case 1: topStr = this->searchString; break;
+            case 2: topStr = this->currentTag.name; break;
+        }
+        topStr+=" ("+std::to_string(page)+"/"+std::to_string(maxPage)+")";
+        this->pageInfo->SetText(topStr);
+        this->pageInfo->SetX(640-(this->pageInfo->GetWidth()/2));
     }
     void OverviewLayout::loadComics() {
         this->comicMenu->ClearItems();
@@ -92,16 +105,24 @@ namespace ui {
         mainApp->detailLayout->showComicDetail();
     }
     void OverviewLayout::next() {
-        if(this->page < maxPage) showPage(this->page + 1);
+        if(this->page < maxPage) {
+            int opts = mainApp->CreateShowDialog("next page?", "do you want to continue on the next page?", {"Yes", "Cancel"}, true);
+            if(opts == 0)
+                showPage(this->page + 1);
+        }
     }
     void OverviewLayout::prev() {
-        if(this->page > 1) showPage(this->page - 1);
+        if(this->page > 1){
+            int opts = mainApp->CreateShowDialog("previous page?", "do you want to continue on the previous page?", {"Yes", "Cancel"}, true);
+            if(opts == 0)
+                showPage(this->page - 1);
+        }
     }
     void OverviewLayout::showPage(int i) {
         switch(this->mode){
             case 0: catShowAll(i); break;
             case 1: catShowSearch(this->searchString, i); break;
-            case 2: catShowTagged(currentTag.id, i); break;
+            case 2: catShowTagged(currentTag, i); break;
         }
     }
     void OverviewLayout::showOpts() {
@@ -136,7 +157,7 @@ namespace ui {
             if(tmpstring[i] == ' ')
                 tmpstring[i] = '+';
         }
-        
+
         catShowSearch(tmpstring, 1);
     }
 }

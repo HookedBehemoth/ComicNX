@@ -10,23 +10,26 @@ namespace ui {
             OverviewLayout();
             ~OverviewLayout();
             void catShowAll(int page);
-            void catShowTagged(int tag, int page);
             void catShowSearch(std::string search, int page);
+            void catShowTagged(model::tag tag, int page);
             void loadComics();
             void showOpts();
             void search();
             void next();
             void prev();
         private:
-            Menu *comicMenu;
             void loadFromLink(std::string url);
-            std::vector<model::comic> comics;
+            void showPage(int i);
             void onClick();
+            Menu *comicMenu;
             Rectangle *topBarRect;
             Image *logo;
+            TextBlock *pageInfo;
             std::string searchString;
+            std::vector<model::comic> comics;
             model::tag currentTag;
-            int page, maxPage, mode;
-            void showPage(int i);
+            int page,
+                maxPage,
+                mode;
     };
 }

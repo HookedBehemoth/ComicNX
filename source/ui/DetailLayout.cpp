@@ -93,7 +93,7 @@ namespace ui {
         int opts = mainApp->CreateShowDialog("search Tag:" , "do you really want to search for: " + tag.name, {"OK", "Cancel"}, true);
         if(opts == 0) {
             printf("searching for tag: %s: %d\n", tag.name.c_str(), std::to_string(tag.id));
-            mainApp->overviewLayout->catShowTagged(tag.id, 1);
+            mainApp->overviewLayout->catShowTagged(tag, 1);
             mainApp->LoadLayout(mainApp->overviewLayout);
         }
     }
