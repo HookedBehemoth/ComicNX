@@ -33,6 +33,8 @@ namespace pu::ui::elm
             s32 GetCallbackCount();
             std::function<void()> GetCallback(s32 Index);
             u64 GetCallbackKey(s32 Index);
+            float GetFactor();
+            void SetFactor(float Factor);
             std::string GetIcon();
             void SetIcon(std::string Icon);
             bool HasIcon();
@@ -49,6 +51,7 @@ namespace pu::ui::elm
             render::NativeFont font;
             render::NativeTexture itex;
             render::NativeTexture ntex;
+            float factor;
     };
 
     class Menu : public Element
