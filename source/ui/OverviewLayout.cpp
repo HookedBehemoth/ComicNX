@@ -131,6 +131,12 @@ namespace ui {
         swkbdClose(&swkbd);
 
         printf("output: %s\n", tmpstring);
+
+        for(int i = 0; i < sizeof(tmpstring); i++) {
+            if(tmpstring[i] == ' ')
+                tmpstring[i] = '+';
+        }
+        
         catShowSearch(tmpstring, 1);
     }
 }
