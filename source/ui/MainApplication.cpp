@@ -38,9 +38,13 @@ namespace ui {
     }
 
     void MainApplication::detail_Input(u64 Down, u64 Up, u64 Held) {
-        if(Down & KEY_X) {
+        if((Down & KEY_X) || (Down & KEY_DRIGHT)) {
             this->LoadLayout(this->imageLayout);
             this->imageLayout->loadComic();
+        }
+        if(Down & KEY_DLEFT){
+            this->LoadLayout(this->imageLayout);
+            this->imageLayout->loadComicEnd();
         }
         if(Down & KEY_B) {
             this->LoadLayout(this->overviewLayout);

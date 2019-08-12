@@ -9,6 +9,7 @@ namespace ui{
             ImageLayout();
             ~ImageLayout();
             void loadComic();
+            void loadComicEnd();
             void next();
             void prev();
         private:
@@ -18,5 +19,6 @@ namespace ui{
             void setImage(std::string path);
             void fixLayout();
             Image *image;
+            TextBlock *pageInfo;
     };
 }

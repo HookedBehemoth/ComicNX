@@ -24,6 +24,7 @@ namespace ui {
         delete this->comicMenu;
         delete this->topBarRect;
         delete this->logo;
+        delete this->pageInfo;
     }
     void OverviewLayout::catShowAll(int page){
         this->mode = 0;
