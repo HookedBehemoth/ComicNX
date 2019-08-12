@@ -13,9 +13,10 @@ namespace ui {
             void catShowTagged(int tag, int page);
             void catShowSearch(std::string search, int page);
             void loadComics();
+            void showOpts();
+            void search();
             void next();
             void prev();
-            std::string searchString;
         private:
             Menu *comicMenu;
             void loadFromLink(std::string url);
@@ -23,5 +24,9 @@ namespace ui {
             void onClick();
             Rectangle *topBarRect;
             Image *logo;
+            std::string searchString;
+            model::tag currentTag;
+            int page, maxPage, mode;
+            void showPage(int i);
     };
 }

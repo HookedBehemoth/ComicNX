@@ -59,42 +59,8 @@ namespace ui {
                 this->Close();
             }
         }
-        if(Down & KEY_Y) {
-            /*printf("swkbd example\n");
-            Result rc=0;
-            SwkbdConfig kbd;
-            char tmpoutstr[16] = {0};
-            printf("swkbdCreate(): 0x%x\n", rc);
-
-            if(R_SUCCEEDED(rc)) {
-                swkbdConfigMakePresetDefault(&kbd);
-                printf("Running swkbdShow...\n");
-                rc = swkbdShow(&kbd, tmpoutstr, sizeof(tmpoutstr));
-                printf("swkbdShow(): 0x%x\n", rc);
-
-                if (R_SUCCEEDED(rc)) {
-                    printf("out str: %s\n", tmpoutstr);
-                }
-                swkbdClose(&kbd);
-            }*/
-            Result rc = 0;
-            SwkbdConfig swkbd;
-            char tmpstring[256];
-            if(R_FAILED(rc = swkbdCreate(&swkbd, 0))){
-                swkbdClose(&swkbd);
-                return;
-            }
-
-            swkbdConfigMakePresetDefault(&swkbd);
-
-            if (R_FAILED(rc = swkbdShow(&swkbd, tmpstring, sizeof(tmpstring)))) {
-                swkbdClose(&swkbd);
-                return;
-	        }
-
-            swkbdClose(&swkbd);
-
-            printf("output: %s\n", tmpstring);
+        if(Down & KEY_X) {
+            this->overviewLayout->showOpts();
         }
         if(Down & KEY_RIGHT) {
             this->overviewLayout->next();

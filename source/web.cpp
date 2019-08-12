@@ -97,6 +97,7 @@ namespace web {
         }
         printf("downloading %s to %s...\n", url.c_str(), fileName.c_str());
         swurl::WebRequest * request = new swurl::WebRequest(url.c_str());
+        printf("finished making response");
         swurl::SessionManager::makeRequest(request);
         return fs::writeFile(fileName, request->response.rawResponseBody);
     }
@@ -106,7 +107,7 @@ namespace web {
             return path;
         std::string url;
         if(thumb){
-            url = FORMAT_THUMB + comic.mediaId + "/" + std::to_string(page) + fs::getSuffix(comic.mediaFType[page+1]);
+            url = FORMAT_THUMB + comic.mediaId + "/" + std::to_string(page) + "t" + fs::getSuffix(comic.mediaFType[page+1]);
         } else {
             url = FORMAT_IMG + comic.mediaId + "/" + std::to_string(page) + fs::getSuffix(comic.mediaFType[page+1]);
         }
