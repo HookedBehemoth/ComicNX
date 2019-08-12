@@ -50,6 +50,7 @@ namespace ui {
         delete this->uploadDate;
     }
     void DetailLayout::showComicDetail() {
+        this->tagMenu->SetCooldownEnabled(true);
         this->tagMenu->SetSelectedIndex(0);
         printf("setting local comic...\n");
         printf("setting title...\n");
