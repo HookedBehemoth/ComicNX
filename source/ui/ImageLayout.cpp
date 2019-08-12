@@ -10,7 +10,7 @@ namespace ui {
         this->SetBackgroundColor(theme.background);
         this->image = new Image(0,0,"sdmc:/shrek.png");
         this->pageInfo = new TextBlock(5, 690, "?/?");
-        this->pageInfo->SetColor(theme.textColor)
+        this->pageInfo->SetColor(theme.textColor);
         this->Add(this->image);
         this->Add(pageInfo);
         this->position = 1;
