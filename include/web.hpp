@@ -3,7 +3,7 @@
 #include <Swurl.hpp>
 #include <vector>
 #include <switch.h>
-#include "files.hpp"
+#include "fs.hpp"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"

@@ -79,7 +79,8 @@ namespace ui {
         }
         printf("setting misc...\n");
         this->pages->SetText(std::to_string(comic.pages) + " pages");
-        this->uploadDate->SetText(std::to_string(comic.timestamp));
+        this->uploadDate->SetText(utl::getRelativeTime
+        (comic.timestamp));
         printf("fix style...\n");
         fixStyle();
     }
