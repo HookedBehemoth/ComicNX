@@ -17,6 +17,7 @@ namespace ui {
             void search();
             void next();
             void prev();
+            bool popular = false;
         private:
             void loadFromLink(std::string url);
             void showPage(int i);
