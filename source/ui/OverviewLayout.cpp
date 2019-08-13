@@ -7,9 +7,9 @@ namespace ui {
     model::comic comic;
 
     OverviewLayout::OverviewLayout() : pu::ui::Layout() {
-        this->logo = new Image(4, 20, "romfs:/logo.png");
-        this->logo->SetWidth(92);
-        this->logo->SetHeight(60);
+        this->logo = new Image(14, 26, "romfs:/logo.png");
+        this->logo->SetWidth(111);
+        this->logo->SetHeight(48);
         this->SetBackgroundColor(theme.background);
         this->topBarRect = new Rectangle(0, 0, 1280, 100, theme.hoverColor);
         this->comicMenu = new Menu(40, 120, 1200, theme.hoverColor, 150, 4);
@@ -44,8 +44,7 @@ namespace ui {
         loadFromLink(web::FORMAT_TAGGED + std::to_string(tag.id) + "&page=" + std::to_string(page));
     }
     void OverviewLayout::loadFromLink(std::string url){
-        if(popular)
-            url+="&sort=popular";
+        if(popular) url+="&sort=popular";
         printf("searching with url: %s\n", url.c_str());
         swurl::WebRequest *request = new swurl::WebRequest(url);
         bool trying = true;
@@ -86,6 +85,8 @@ namespace ui {
             case 2: topStr = this->currentTag.name; break;
         }
         topStr+=" ("+std::to_string(page)+"/"+std::to_string(maxPage)+")";
+        if(mode!=0 && popular) topStr+=" popular";
+        else topStr+=" date";
         this->pageInfo->SetText(topStr);
         this->pageInfo->SetX(640-(this->pageInfo->GetWidth()/2));
     }

@@ -10,17 +10,17 @@ namespace ui {
 
     DetailLayout::DetailLayout() : pu::ui::Layout() {
         this->cover = new Image(200, 200, "romfs:/shrek.png");
-        this->logo = new Image(4, 20, "romfs:/logo.png");
-        logo->SetWidth(92);
-        logo->SetHeight(60);
+        this->logo = new Image(14, 26, "romfs:/logo.png");
+        this->logo->SetWidth(111);
+        this->logo->SetHeight(48);
         this->SetBackgroundColor(theme.background);
-        topBarRect = new Rectangle(0, 0, 1280, 100, theme.hoverColor);
-        focusRect = new Rectangle(40, 120, 1200, 600, theme.hoverColor);
+        this->topBarRect = new Rectangle(0, 0, 1280, 100, theme.hoverColor);
+        this->focusRect = new Rectangle(40, 120, 1200, 600, theme.hoverColor);
         
         this->title = new TextBlock(600, 30, "loading...", 40);
         this->title->SetColor(theme.textColor);
         this->tagMenu = new Menu(640, 130, 590, theme.textColor, 50, 10);
-        tagMenu->SetColor(theme.tagBg);
+        this->tagMenu->SetColor(theme.tagBg);
         this->pages = new TextBlock(640, 645, "loading...");
         this->pages->SetColor(theme.textColor);
         this->uploadDate = new TextBlock(640, 675, "loading...");
@@ -54,7 +54,7 @@ namespace ui {
         this->tagMenu->SetSelectedIndex(0);
         printf("setting local comic...\n");
         printf("setting title...\n");
-        title->SetText(comic.name);
+        this->title->SetText(comic.name);
         std::string coverPath = "comics/" + comic.id + "/cover" + fs::getSuffix(comic.mediaFType[0]);
         if(!fs::fileExists(coverPath)) {
             printf("making path...\n");
