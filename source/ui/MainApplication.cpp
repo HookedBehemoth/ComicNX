@@ -29,20 +29,20 @@ namespace ui {
         if(Down & KEY_B) {
             this->LoadLayout(this->detailLayout);
         }
-        if(Down & KEY_RIGHT) {
+        if((Down & KEY_RIGHT) || (Down & KEY_ZR) || (Down & KEY_R)) {
             this->imageLayout->next();
         }
-        if(Down & KEY_LEFT) {
+        if((Down & KEY_LEFT) || (Down & KEY_ZL) || (Down & KEY_L)) {
             this->imageLayout->prev();
         }
     }
 
     void MainApplication::detail_Input(u64 Down, u64 Up, u64 Held) {
-        if((Down & KEY_X) || (Down & KEY_DRIGHT)) {
+        if((Down & KEY_X) || (Down & KEY_RIGHT) || (Down & KEY_ZR) || (Down & KEY_R)) {
             this->LoadLayout(this->imageLayout);
             this->imageLayout->loadComic();
         }
-        if(Down & KEY_DLEFT){
+        if((Down & KEY_LEFT) || (Down & KEY_ZL) || (Down & KEY_L)) {
             this->LoadLayout(this->imageLayout);
             this->imageLayout->loadComicEnd();
         }
@@ -66,10 +66,10 @@ namespace ui {
         if(Down & KEY_X) {
             this->overviewLayout->showOpts();
         }
-        if(Down & KEY_RIGHT) {
+        if((Down & KEY_RIGHT) || (Down & KEY_ZR) || (Down & KEY_R)) {
             this->overviewLayout->next();
         }
-        if(Down & KEY_LEFT) {
+        if((Down & KEY_LEFT) || (Down & KEY_ZL) || (Down & KEY_L)) {
             this->overviewLayout->prev();
         }
     }
