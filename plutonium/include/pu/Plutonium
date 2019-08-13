@@ -15,6 +15,9 @@
 #include <pu/pu_CFW.hpp>
 #include <pu/pu_String.hpp>
 
+#include <pu/audio/audio_Music.hpp>
+#include <pu/audio/audio_Sfx.hpp>
+
 #include <pu/ui/ui_Application.hpp>
 #include <pu/ui/ui_Color.hpp>
 #include <pu/ui/ui_Container.hpp>
@@ -35,3 +38,6 @@
 
 #include <pu/ui/render/render_Renderer.hpp>
 #include <pu/ui/render/render_SDL2.hpp>
+
+#include <pu/web/web_Content.hpp>
+#include <pu/web/web_Display.hpp>
