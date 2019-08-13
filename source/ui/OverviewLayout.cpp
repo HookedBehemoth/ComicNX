@@ -45,14 +45,14 @@ namespace ui {
     }
     void OverviewLayout::loadFromLink(std::string url){
         if(popular) url+="&sort=popular";
-        printf("searching with url: %s\n", url.c_str());
+        printf("INFO: searching with url: %s\n", url.c_str());
         swurl::WebRequest *request = new swurl::WebRequest(url);
         bool trying = true;
         while(trying){
             swurl::SessionManager::makeRequest(request);
             if(request->response.statusCode != 200){
-                printf("error loading json from api...\n");
-                int opts = mainApp->CreateShowDialog("Error", "couldn't fetch from web...", {"try again", "leave"}, false);
+                printf("ERROR: error loading json from api...\n");
+                int opts = mainApp->CreateShowDialog("Error", "couldn't fetch from web...\n status code "+std::to_string(request->response.statusCode), {"try again", "leave"}, false);
                 if(opts == 1) {
                     mainApp->Close();
                     return;
@@ -128,7 +128,7 @@ namespace ui {
         switch(this->mode){
             case 0: catShowAll(i); break;
             case 1: catShowSearch(this->searchString, i); break;
-            case 2: catShowTagged(currentTag, i); break;
+            case 2: catShowTagged(this->currentTag, i); break;
         }
     }
     void OverviewLayout::showOpts() {

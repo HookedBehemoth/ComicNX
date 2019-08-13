@@ -21,11 +21,11 @@ namespace ui {
     }
     void ImageLayout::loadComic() {
         this->position = 1;
-        setImage(web::getPath(comic, position, false));
+        setImage(web::getPath(comic, this->position, false));
     }
     void ImageLayout::loadComicEnd() {
         this->position = comic.pages;
-        setImage(web::getPath(comic, position, false));
+        setImage(web::getPath(comic, this->position, false));
     }
     void ImageLayout::setImage(std::string path) {
         this->image->SetImage(path);
@@ -33,31 +33,31 @@ namespace ui {
         this->pageInfo->SetText(std::to_string(position) + "/" + std::to_string(comic.pages));
     }
     void ImageLayout::fixLayout() {
-        s32 aWSpace = wSpace - this->image->GetX();
-        s32 aHSpace = hSpace - this->image->GetY();
+        s32 aWSpace = this->wSpace - this->image->GetX();
+        s32 aHSpace = this->hSpace - this->image->GetY();
         if(this->image->GetWidth() > aWSpace) {
-            this->image->SetHeight((image->GetHeight()*aWSpace)/image->GetWidth());
+            this->image->SetHeight((image->GetHeight()*aWSpace)/this->image->GetWidth());
             this->image->SetWidth(aWSpace);
         }
         if(this->image->GetHeight() > aHSpace) {
-            this->image->SetWidth((image->GetWidth()*aHSpace)/image->GetHeight());
+            this->image->SetWidth((this->image->GetWidth()*aHSpace)/this->image->GetHeight());
             this->image->SetHeight(aHSpace);
         }
-        this->image->SetX(640-(image->GetWidth()/2));
-        this->image->SetY(360-(image->GetHeight()/2));
+        this->image->SetX(640-(this->image->GetWidth()/2));
+        this->image->SetY(360-(this->image->GetHeight()/2));
     }
     void ImageLayout::next(){
         if(this->position < comic.pages){
-            position++;
-            setImage(web::getPath(comic, position, false));
+            this->position++;
+            setImage(web::getPath(comic, this->position, false));
         } else {
             mainApp->LoadLayout(mainApp->detailLayout);
         }
     }
     void ImageLayout::prev(){
         if(this->position > 1){
-            position--;
-            setImage(web::getPath(comic, position, false));
+            this->position--;
+            setImage(web::getPath(comic, this->position, false));
         } else {
             mainApp->LoadLayout(mainApp->detailLayout);
         }

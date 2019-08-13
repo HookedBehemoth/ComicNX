@@ -53,13 +53,11 @@ namespace ui {
 
     void MainApplication::overview_Input(u64 Down, u64 Up, u64 Held) {
         if((Down & KEY_PLUS) || (Down & KEY_MINUS)){
-            printf("closing\n");
             this->Close();
         }
         if(Down & KEY_B) {
             int opt = this->CreateShowDialog("Exit?", "Do you really want to quit?", {"yes", "no"}, true, "romfs:/shrek.png");
             if(opt == 0){
-                printf("closing\n");
                 this->Close();
             }
         }

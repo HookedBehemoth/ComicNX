@@ -3,18 +3,14 @@
 namespace web {
     model::FType getFtype(const Value& imageJson) {
         std::string fTypeValue = imageJson["t"].GetString();
-        //printf("checking ftype %s: ", fTypeValue.c_str());
         if(fTypeValue == std::string("j")){
-            //printf("is jpg\n");
             return model::JPG;
         } else if(fTypeValue == std::string("p")){
-            //printf("is png\n");
             return model::PNG;
         } else if(fTypeValue == std::string("g")){
-            //printf("is gif\n");
             return model::GIF;
         } else {
-            printf("%s is unsupported\n", fTypeValue.c_str());
+            printf("ERROR: %s is unsupported\n", fTypeValue.c_str());
             return model::UNSUPPORTED;
         }
     }
@@ -48,13 +44,7 @@ namespace web {
             default:
                 break;
         }
-        if(comicJson["title"]["pretty"].IsString()){
-            comic->name = comicJson["title"]["pretty"].GetString();
-        } else {
-            printf("fuck!\n");
-            comic->name = "malformed name";
-        }
-        printf("%s\n", comic->name.c_str());
+        comic->name = comicJson["title"]["pretty"].GetString();
         comic->mediaFType.push_back(getFtype(comicJson["images"]["cover"]));
         comic->mediaFType.push_back(getFtype(comicJson["images"]["thumbnail"]));
         comic->timestamp = comicJson["upload_date"].GetUint64();
@@ -95,9 +85,9 @@ namespace web {
         if(fs::fileExists(fileName)){
             return false;
         }
-        printf("downloading %s to %s...\n", url.c_str(), fileName.c_str());
+        printf("INFO: downloading %s to %s...\n", url.c_str(), fileName.c_str());
         swurl::WebRequest * request = new swurl::WebRequest(url.c_str());
-        printf("finished making response");
+        printf("INFO: finished making response");
         swurl::SessionManager::makeRequest(request);
         return fs::writeFile(fileName, request->response.rawResponseBody);
     }
@@ -115,12 +105,12 @@ namespace web {
         return path;
     }
     void onProgressChanged(swurl::WebRequest * request, double progress) {
-        printf("progress=%s\n", std::to_string(progress).c_str());
+        printf("INFO: progress=%g\n", progress);
     }
     void onCompleted(swurl::WebRequest * request) {
-        printf("Download Completed with status code %d\n", request->response.statusCode);
+        printf("INFO: Download Completed with status code %d\n", request->response.statusCode);
     }
     void onError(swurl::WebRequest * request, std::string error) {
-        printf("Error:  %s\n", error.c_str());
+        printf("ERROR:  %s\n", error.c_str());
     }
 }

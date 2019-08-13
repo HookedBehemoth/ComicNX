@@ -12,7 +12,7 @@ using namespace swurl;
 model::theme theme;
 
 void init(){
-    printf("setting theme");
+    printf("INFO: setting theme\n");
     theme = *new model::theme;
     theme.background = pu::ui::Color::FromHex("#0d0d0dff");
     theme.hoverColor = pu::ui::Color::FromHex("#1f1f1fff");
@@ -38,13 +38,13 @@ int main(int argc, char **argv) {
 
     init();
 
-    printf("starting application...\n");
+    printf("INFO: starting application...\n");
     ui::MainApplication *amain = new ui::MainApplication();
     amain->Show();
-    printf("cleaning up...\n");
+    printf("INFO: cleaning up...\n");
     delete amain;
 
     SessionManager::dealloc();
-    printf("exiting...\n");
+    printf("INFO: exiting...\n");
     return 0;
 }

@@ -52,24 +52,24 @@ namespace ui {
     void DetailLayout::showComicDetail() {
         this->tagMenu->SetCooldownEnabled(true);
         this->tagMenu->SetSelectedIndex(0);
-        printf("setting local comic...\n");
-        printf("setting title...\n");
+        printf("INFO: setting local comic...\n");
+        printf("INFO: setting title...\n");
         this->title->SetText(comic.name);
         std::string coverPath = "comics/" + comic.id + "/cover" + fs::getSuffix(comic.mediaFType[0]);
         if(!fs::fileExists(coverPath)) {
-            printf("making path...\n");
+            printf("INFO: making path...\n");
             fs::mkpath("comics/" + comic.id + "/");
-            printf("downloading...\n");
+            printf("INFO: downloading...\n");
             web::downloadFile(
                 web::FORMAT_THUMB + comic.mediaId + "/cover" + fs::getSuffix(comic.mediaFType[0]),
                 coverPath
                 );
         }
-        printf("setting cover...\n");
+        printf("INFO: setting cover...\n");
         if(fs::fileExists("sdmc:/switch/" + coverPath))
             this->cover->SetImage(coverPath);
 
-        printf("setting tags...\n");
+        printf("INFO: setting tags...\n");
         this->tagMenu->ClearItems();
         for(auto tag: comic.tags) {
             MenuItem *item = new MenuItem(tag.name);
@@ -77,11 +77,11 @@ namespace ui {
             item->AddOnClick(std::bind(&DetailLayout::searchTag, this));
             this->tagMenu->AddItem(item);
         }
-        printf("setting misc...\n");
+        printf("INFO: setting misc...\n");
         this->pages->SetText(std::to_string(comic.pages) + " pages");
         this->uploadDate->SetText(utl::getRelativeTime
         (comic.timestamp));
-        printf("fix style...\n");
+        printf("INFO: fix style...\n");
         fixStyle();
     }
     void DetailLayout::debug(){
@@ -90,10 +90,10 @@ namespace ui {
     }
     void DetailLayout::searchTag(){
         model::tag tag = comic.tags[this->tagMenu->GetSelectedIndex()];
-        printf("clicked on %s\n", tag.name.c_str());
+        printf("INFO: clicked on %s\n", tag.name.c_str());
         int opts = mainApp->CreateShowDialog("search Tag:" , "do you really want to search for: " + tag.name, {"OK", "Cancel"}, true);
         if(opts == 0) {
-            printf("searching for tag: %s: %d\n", tag.name.c_str(), std::to_string(tag.id));
+            printf("INFO: searching for tag: %s: %d\n", tag.name.c_str(), tag.id);
             mainApp->overviewLayout->catShowTagged(tag, 1);
             mainApp->LoadLayout(mainApp->overviewLayout);
         }
