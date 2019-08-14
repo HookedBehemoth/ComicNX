@@ -8,7 +8,7 @@ namespace ui {
 
     ImageLayout::ImageLayout() : pu::ui::Layout() {
         this->SetBackgroundColor(theme.background);
-        this->image = new Image(0,0,"sdmc:/shrek.png");
+        this->image = new Image(0,0,"romfs:/shrek.png");
         this->pageInfo = new TextBlock(5, 690, "?/?");
         this->pageInfo->SetColor(theme.textColor);
         this->Add(this->image);
