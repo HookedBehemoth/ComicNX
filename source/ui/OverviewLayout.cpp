@@ -91,6 +91,7 @@ namespace ui {
         this->pageInfo->SetX(640-(this->pageInfo->GetWidth()/2));
     }
     void OverviewLayout::loadComics() {
+        this->comicMenu->SetSelectedIndex(0);
         this->comicMenu->ClearItems();
         for(model::comic comic : this->comics) {
             MenuItem *item = new MenuItem(comic.name);
@@ -101,9 +102,12 @@ namespace ui {
                 web::downloadFile(web::FORMAT_THUMB + comic.mediaId + "/thumb"  + fs::getSuffix(comic.mediaFType[1]), thumbPath);
             }
             item->SetIcon(thumbPath);
+            item->SetExtend(comic.id);
+            if(comic.language != model::CLang::UNKNOWN) item->SetExtendIcon(fs::getFlagPath(comic.language));
             item->AddOnClick(std::bind(&OverviewLayout::onClick, this));
             this->comicMenu->AddItem(item);
         }
+        mainApp->OnRender();
     }
     void OverviewLayout::onClick() {
         comic = comics[this->comicMenu->GetSelectedIndex()];

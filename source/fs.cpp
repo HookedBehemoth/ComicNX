@@ -83,16 +83,11 @@ namespace fs{
         return bSuccess;
     }
 
-    std::string getSuffix(int fType){
-        switch(fType) {
-            case model::FType::JPG:
-                return ".jpg";
-            case model::FType::PNG:
-                return ".png";
-            case model::FType::GIF:
-                return ".gif";
-            default:
-                return ".unsupported";
-        }
+    std::string getSuffix(int fType) {
+        return model::FTypeStrings[fType];
+    }
+
+    std::string getFlagPath(int cLang) {
+        return "romfs:/" + model::CLangStrings[cLang] + ".png";
     }
 }

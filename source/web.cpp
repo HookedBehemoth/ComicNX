@@ -11,13 +11,15 @@ namespace web {
             return model::GIF;
         } else {
             printf("ERROR: %s is unsupported\n", fTypeValue.c_str());
-            return model::UNSUPPORTED;
+            return model::FType::UNSUPPORTED;
         }
     }
     model::tag getTag(const Value& tagJson) {
         model::tag tag = *new model::tag;
-        tag.id = tagJson["id"].GetInt();
         tag.name = tagJson["name"].GetString();
+        tag.type = tagJson["type"].GetString();
+        tag.id = tagJson["id"].GetInt();
+        tag.count = tagJson["count"].GetInt();
         return tag;
     }
     model::comic getComic(const Value& comicJson) {
@@ -58,8 +60,14 @@ namespace web {
         }
         const Value& tags = comicJson["tags"];
         if(tags.IsArray()){
-            for(const Value& tag : tags.GetArray())
-                comic->tags.push_back(getTag(tag));
+            for(const Value& tagJson : tags.GetArray()){
+                model::tag tag = getTag(tagJson);
+                if((tag.type == "language") && ((tag.name == "japanese") || (tag.name == "chinese") || (tag.name == "english"))){
+                    comic->language = utl::getLanguage(tag.name);
+                    continue;
+                }
+                comic->tags.push_back(tag);
+            }
         }
         return *comic;
     }

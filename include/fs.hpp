@@ -15,4 +15,5 @@ namespace fs{
     bool fileExists(std::string filename);
     bool mkpath(std::string path);
     std::string getSuffix(int fType);
+    std::string getFlagPath(int cLang);
 }

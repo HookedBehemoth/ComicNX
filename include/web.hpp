@@ -4,6 +4,7 @@
 #include <vector>
 #include <switch.h>
 #include "fs.hpp"
+#include "utl.hpp"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"

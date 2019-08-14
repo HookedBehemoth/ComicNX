@@ -84,11 +84,11 @@ namespace ui {
         printf("INFO: fix style...\n");
         fixStyle();
     }
-    void DetailLayout::debug(){
+    void DetailLayout::debug() {
         this->cover->SetX(0);
         this->cover->SetY(0);
     }
-    void DetailLayout::searchTag(){
+    void DetailLayout::searchTag() {
         model::tag tag = comic.tags[this->tagMenu->GetSelectedIndex()];
         printf("INFO: clicked on %s\n", tag.name.c_str());
         int opts = mainApp->CreateShowDialog("search Tag:" , "do you really want to search for: " + tag.name, {"OK", "Cancel"}, true);
