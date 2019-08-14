@@ -38,7 +38,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
 APP_AUTHOR	:=	Behemoth
-APP_VERSION	:=	0.4.0 - Beta
+APP_VERSION	:=	0.8.0
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
