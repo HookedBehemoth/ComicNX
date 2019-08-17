@@ -70,7 +70,6 @@ namespace web {
                 model::tag tag = getTag(tagJson);
                 if((tag.type == "language") && ((tag.name == "japanese") || (tag.name == "chinese") || (tag.name == "english"))){
                     comic->language = getLanguage(tag.name);
-                    continue;
                 }
                 comic->tags.push_back(tag);
             }
