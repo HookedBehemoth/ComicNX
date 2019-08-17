@@ -14,6 +14,9 @@ namespace model{
         std::string type;
         int id;
         int count;
+        inline bool operator==(tag a) {
+            return (a.id == id);
+        };
     };
     struct comic {
         std::string name, id, mediaId;
@@ -23,7 +26,14 @@ namespace model{
         int pages, favorites;
         int language = CLang::UNKNOWN;
     };
+    struct page {
+        std::vector<model::comic> comics;
+        int maxPages;
+    };
     struct theme {
         pu::ui::Color textColor, hoverColor, background, tagBg;
+    };
+    enum searchMode {
+        ALL, SEARCH, TAG
     };
 }

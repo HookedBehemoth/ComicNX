@@ -1,22 +1,23 @@
 #include "DetailLayout.hpp"
 #include "MainApplication.hpp"
+#include "utl.hpp"
 
 extern model::theme theme;
 
 using namespace pu::ui::elm;
 namespace ui {
     extern MainApplication *mainApp;
+    extern model::tag searchTag;
     extern model::comic comic;
 
     DetailLayout::DetailLayout() : pu::ui::Layout() {
+        this->SetBackgroundColor(theme.background);
+        this->topBarRect = new Rectangle(0, 0, 1280, 100, theme.hoverColor);
+        this->focusRect = new Rectangle(40, 120, 1200, 600, theme.hoverColor);
         this->cover = new Image(200, 200, "romfs:/shrek.png");
         this->logo = new Image(14, 26, "romfs:/logo.png");
         this->logo->SetWidth(111);
         this->logo->SetHeight(48);
-        this->SetBackgroundColor(theme.background);
-        this->topBarRect = new Rectangle(0, 0, 1280, 100, theme.hoverColor);
-        this->focusRect = new Rectangle(40, 120, 1200, 600, theme.hoverColor);
-        
         this->title = new TextBlock(600, 30, "loading...", 40);
         this->title->SetColor(theme.textColor);
         this->tagMenu = new Menu(640, 130, 590, theme.textColor, 50, 10);
@@ -34,11 +35,6 @@ namespace ui {
         this->Add(this->pages);
         this->Add(this->uploadDate);
     }
-    void DetailLayout::fixStyle() {
-        this->title->SetX(640-(this->title->GetTextWidth()/2));
-        this->cover->SetX(340-(cover->GetWidth()/2));
-        this->cover->SetY(420-(cover->GetHeight()/2));
-    }
     DetailLayout::~DetailLayout() {
         delete this->cover;
         delete this->logo;
@@ -49,53 +45,58 @@ namespace ui {
         delete this->pages;
         delete this->uploadDate;
     }
+    void DetailLayout::onInput(u64 Down, u64 Up, u64 Held) {
+        if((Down & KEY_X) || (Down & KEY_RIGHT) || (Down & KEY_ZR) || (Down & KEY_R)) {
+            mainApp->LoadLayout(mainApp->imageLayout);
+            mainApp->imageLayout->loadComic();
+        }
+        if((Down & KEY_LEFT) || (Down & KEY_ZL) || (Down & KEY_L)) {
+            mainApp->LoadLayout(mainApp->imageLayout);
+            mainApp->imageLayout->loadComicEnd();
+        }
+        if(Down & KEY_B) {
+            mainApp->LoadLayout(mainApp->mainLayout);
+        }
+    }
     void DetailLayout::showComicDetail() {
         this->tagMenu->SetCooldownEnabled(true);
         this->tagMenu->SetSelectedIndex(0);
-        printf("INFO: setting local comic...\n");
-        printf("INFO: setting title...\n");
+        PRINTF("INFO: setting local comic...\n");
         this->title->SetText(comic.name);
-        std::string coverPath = "comics/" + comic.id + "/cover" + fs::getSuffix(comic.mediaFType[0]);
-        if(!fs::fileExists(coverPath)) {
-            printf("INFO: making path...\n");
-            fs::mkpath("comics/" + comic.id + "/");
-            printf("INFO: downloading...\n");
-            web::downloadFile(
-                web::FORMAT_THUMB + comic.mediaId + "/cover" + fs::getSuffix(comic.mediaFType[0]),
-                coverPath
-                );
-        }
-        printf("INFO: setting cover...\n");
-        if(fs::fileExists("sdmc:/switch/" + coverPath))
-            this->cover->SetImage(coverPath);
-
-        printf("INFO: setting tags...\n");
+        this->cover->SetImage(web::getPath(comic, 1, false));
         this->tagMenu->ClearItems();
         for(auto tag: comic.tags) {
             MenuItem *item = new MenuItem(tag.name);
             item->SetColor(theme.textColor);
-            item->AddOnClick(std::bind(&DetailLayout::searchTag, this));
+            if(searchTag==tag) item->SetColor(theme.background);
+            item->AddOnClick(std::bind(&DetailLayout::onItemClick, this));
             this->tagMenu->AddItem(item);
         }
-        printf("INFO: setting misc...\n");
         this->pages->SetText(std::to_string(comic.pages) + " pages");
-        this->uploadDate->SetText(utl::getRelativeTime
-        (comic.timestamp));
-        printf("INFO: fix style...\n");
-        fixStyle();
+        this->uploadDate->SetText(utl::getRelativeTime(comic.timestamp));
+        this->title->SetX(640-(this->title->GetTextWidth()/2));
+        if(this->cover->GetWidth() > 600) {
+            this->cover->SetHeight((cover->GetHeight()*600)/this->cover->GetWidth());
+            this->cover->SetWidth(600);
+        }
+        if(this->cover->GetHeight() > 600) {
+            this->cover->SetWidth((this->cover->GetWidth()*600)/this->cover->GetHeight());
+            this->cover->SetHeight(600);
+        }
+        this->cover->SetX(340-(cover->GetWidth()/2));
+        this->cover->SetY(420-(cover->GetHeight()/2));
     }
-    void DetailLayout::debug() {
-        this->cover->SetX(0);
-        this->cover->SetY(0);
-    }
-    void DetailLayout::searchTag() {
+    void DetailLayout::onItemClick() {
         model::tag tag = comic.tags[this->tagMenu->GetSelectedIndex()];
-        printf("INFO: clicked on %s\n", tag.name.c_str());
-        int opts = mainApp->CreateShowDialog("search Tag:" , "do you really want to search for: " + tag.name, {"OK", "Cancel"}, true);
+        PRINTF("INFO: clicked on %s\n", tag.name.c_str());
+        int opts = mainApp->CreateShowDialog("search Tag?" , "do you really want to search for: " + tag.name, {"OK", "Cancel"}, true);
         if(opts == 0) {
-            printf("INFO: searching for tag: %s: %d\n", tag.name.c_str(), tag.id);
-            mainApp->overviewLayout->catShowTagged(tag, 1);
-            mainApp->LoadLayout(mainApp->overviewLayout);
+            PRINTF("INFO: searching for tag: %s: %d\n", tag.name.c_str(), tag.id);
+            mainApp->LoadLayout(mainApp->mainLayout);
+            if(!(searchTag==tag)) {
+                searchTag = tag;
+                mainApp->mainLayout->tagSearch();
+            }
         }
     }
 }
