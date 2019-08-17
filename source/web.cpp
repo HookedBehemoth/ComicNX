@@ -10,7 +10,7 @@ namespace web {
         } else if(fTypeValue == std::string("g")){
             return model::GIF;
         } else {
-            printf("ERROR: %s is unsupported\n", fTypeValue.c_str());
+            PRINTF("ERROR: %s is unsupported\n", fTypeValue.c_str());
             return model::FType::UNSUPPORTED;
         }
     }
@@ -89,18 +89,36 @@ namespace web {
         
         return comics;
     }
+    model::page getComics(std::string url) {
+        model::page *page = new model::page();
+        PRINTF("INFO: searching with url: %s\n", url.c_str());
+        swurl::WebRequest *request = new swurl::WebRequest(url);
+        swurl::SessionManager::makeRequest(request);
+        if(request->response.statusCode != 200) return *page;
+        Document d;
+        d.Parse(request->response.rawResponseBody.c_str());
+        if(d.HasMember("error")) return *page;
+        page->maxPages = d["num_pages"].GetInt();
+        page->comics = getComics(d["result"]);
+        PRINTF("INFO: returning page with %d comics\n", page->comics.size());
+        return *page;
+    }
     bool downloadFile(std::string url, std::string fileName){
         if(fs::fileExists(fileName)){
             return false;
         }
-        printf("INFO: downloading %s to %s...\n", url.c_str(), fileName.c_str());
+        PRINTF("INFO: downloading %s to %s...\n", url.c_str(), fileName.c_str());
         swurl::WebRequest * request = new swurl::WebRequest(url.c_str());
-        printf("INFO: finished making response");
+        PRINTF("INFO: finished making response");
         swurl::SessionManager::makeRequest(request);
         return fs::writeFile(fileName, request->response.rawResponseBody);
     }
     std::string getPath(model::comic comic, int page, bool thumb){
-        std::string path = "comics/" + comic.id + "/" + std::to_string(page) + fs::getSuffix(comic.mediaFType[page+1]);
+        std::string path = "sdmc:/switch/ComicNX/comics/" + comic.id + "/";
+        fs::mkpath(path);
+        path+=std::to_string(page);
+        if(thumb) path+="t";
+        path+=fs::getSuffix(comic.mediaFType[page+1]);
         if(fs::fileExists(path))
             return path;
         std::string url;
@@ -113,12 +131,12 @@ namespace web {
         return path;
     }
     void onProgressChanged(swurl::WebRequest * request, double progress) {
-        printf("INFO: progress=%g\n", progress);
+        PRINTF("INFO: progress=%g\n", progress);
     }
     void onCompleted(swurl::WebRequest * request) {
-        printf("INFO: Download Completed with status code %d\n", request->response.statusCode);
+        PRINTF("INFO: Download Completed with status code %d\n", request->response.statusCode);
     }
     void onError(swurl::WebRequest * request, std::string error) {
-        printf("ERROR:  %s\n", error.c_str());
+        PRINTF("ERROR:  %s\n", error.c_str());
     }
 }

@@ -62,4 +62,15 @@ namespace ui {
             mainApp->LoadLayout(mainApp->detailLayout);
         }
     }
+    void ImageLayout::onInput(u64 Down, u64 Up, u64 Held) {
+        if(Down & KEY_B) {
+            mainApp->LoadLayout(mainApp->detailLayout);
+        }
+        if((Down & KEY_RIGHT) || (Down & KEY_ZR) || (Down & KEY_R)) {
+            this->next();
+        }
+        if((Down & KEY_LEFT) || (Down & KEY_ZL) || (Down & KEY_L)) {
+            this->prev();
+        }
+    }
 }

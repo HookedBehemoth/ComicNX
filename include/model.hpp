@@ -23,7 +23,14 @@ namespace model{
         int pages, favorites;
         int language = CLang::UNKNOWN;
     };
+    struct page {
+        std::vector<model::comic> comics;
+        int maxPages;
+    };
     struct theme {
         pu::ui::Color textColor, hoverColor, background, tagBg;
+    };
+    enum searchMode {
+        ALL, SEARCH, TAG
     };
 }
