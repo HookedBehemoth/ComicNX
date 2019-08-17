@@ -14,6 +14,9 @@ namespace model{
         std::string type;
         int id;
         int count;
+        inline bool operator==(tag a) {
+            return (a.id == id);
+        };
     };
     struct comic {
         std::string name, id, mediaId;

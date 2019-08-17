@@ -1,11 +1,13 @@
 #include "DetailLayout.hpp"
 #include "MainApplication.hpp"
+#include "utl.hpp"
 
 extern model::theme theme;
 
 using namespace pu::ui::elm;
 namespace ui {
     extern MainApplication *mainApp;
+    extern model::tag searchTag;
     extern model::comic comic;
 
     DetailLayout::DetailLayout() : pu::ui::Layout() {
@@ -66,6 +68,7 @@ namespace ui {
         for(auto tag: comic.tags) {
             MenuItem *item = new MenuItem(tag.name);
             item->SetColor(theme.textColor);
+            if(searchTag==tag) item->SetColor(theme.background);
             item->AddOnClick(std::bind(&DetailLayout::onItemClick, this));
             this->tagMenu->AddItem(item);
         }
@@ -88,9 +91,12 @@ namespace ui {
         PRINTF("INFO: clicked on %s\n", tag.name.c_str());
         int opts = mainApp->CreateShowDialog("search Tag?" , "do you really want to search for: " + tag.name, {"OK", "Cancel"}, true);
         if(opts == 0) {
-            printf("INFO: searching for tag: %s: %d\n", tag.name.c_str(), tag.id);
+            PRINTF("INFO: searching for tag: %s: %d\n", tag.name.c_str(), tag.id);
             mainApp->LoadLayout(mainApp->mainLayout);
-            mainApp->mainLayout->tagSearch({tag});
+            if(!(searchTag==tag)) {
+                searchTag = tag;
+                mainApp->mainLayout->tagSearch();
+            }
         }
     }
 }

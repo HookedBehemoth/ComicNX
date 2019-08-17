@@ -11,7 +11,7 @@ namespace ui {
             ~MainLayout();
             void onInput(u64 Down, u64 Up, u64 Held);
             void loadPage();
-            void tagSearch(std::vector<model::tag> Tags);
+            void tagSearch();
         private:
             void next();
             void prev();
@@ -27,7 +27,6 @@ namespace ui {
             Menu *comicMenu;
             std::vector<model::comic> comics;
             std::string searchString;
-            std::vector<model::tag> searchTags;
             model::searchMode mode = model::searchMode::ALL;
             int page = 1, maxPage = 1, section = 0, maxSection = 0;
             bool popular = false;

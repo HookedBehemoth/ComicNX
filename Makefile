@@ -38,7 +38,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
 APP_AUTHOR	:=	Behemoth
-APP_VERSION	:=	0.8.0
+APP_VERSION	:=	1.0.0
 
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
@@ -53,8 +53,7 @@ ROMFS		:=	romfs
 ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections -fpermissive \
-			$(ARCH) $(DEFINES) \
-			-DDEBUG=1
+			$(ARCH) $(DEFINES)
 
 CFLAGS	+=	$(INCLUDE) -D__SWITCH__
 

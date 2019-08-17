@@ -1,10 +1,10 @@
 #include "MainLayout.hpp"
 #include "MainApplication.hpp"
-#include "web.hpp"
 
 extern model::theme theme;
 namespace ui {
     extern MainApplication *mainApp;
+    model::tag searchTag;
     model::comic comic;
 
     MainLayout::MainLayout() : pu::ui::Layout() {
@@ -49,6 +49,7 @@ namespace ui {
         }
     }
     void MainLayout::next() {
+        PRINTF("INFO: switched from page %d and section %d to...\n", this->page, this->section);
         if(this->section == (this->maxSection-1)) {
             if (this->page < this->maxPage) {
                 this->page++;
@@ -60,10 +61,11 @@ namespace ui {
         } else {
             section++;
         }
+        PRINTF("INFO: ...page %d and section %d\n", this->page, this->section);
         loadSection();
     }
     void MainLayout::prev() {
-        PRINTF("INFO: switched from page %d and section %d to...", this->page, this->section);
+        PRINTF("INFO: switched from page %d and section %d to...\n", this->page, this->section);
         if(this->section == 0) {
             if(this->page > 1) {
                 this->page--;
@@ -75,7 +77,7 @@ namespace ui {
         } else {
             section--;
         }
-        PRINTF(" page %d and section %d\n", this->page, this->section);
+        PRINTF("INFO: ...page %d and section %d\n", this->page, this->section);
         loadSection();
     }
     void MainLayout::loadSection() {
@@ -85,32 +87,35 @@ namespace ui {
             if((i+this->section*5)<comics.size()) addComic(comics[i+this->section*5]);
         }
         this->comicMenu->SetSelectedIndex(0);
-        std::string topStr;
+        std::string topStr, tmpString;
+        tmpString = searchString;
         switch(mode) {
             case model::searchMode::ALL:    topStr+="all";          break;
             case model::searchMode::SEARCH:{
-                for(int i = 0; i < sizeof(searchString); i++) {
-                    if(searchString[i] == '+')
-                        searchString[i] = ' ';
+                for(long unsigned int i = 0; i < sizeof(tmpString); i++) {
+                    if(tmpString[i] == '+')
+                        tmpString[i] = ' ';
                 }
-                topStr+=searchString;
+                topStr+=tmpString;
                 break;
             }
             case model::searchMode::TAG:{
-                for(model::tag tag : searchTags) {
-                    topStr+=tag.name;
-                    topStr+=", ";
-                }
+                topStr+=searchTag.name;
                 break;
             }
         }
-        topStr+=" (";
-        topStr+=std::to_string(5*(page-1)+section+1);
-        topStr+="/~";
-        topStr+=std::to_string(5*maxPage);
-        topStr+=") sort by: ";
+        topStr+=" sort by: ";
         if(mode!=model::searchMode::ALL && popular) topStr+="popular";
         else topStr+="date";
+        topStr+=" (page: ";
+        topStr+=std::to_string(page);
+        topStr+="/";
+        topStr+=std::to_string(maxPage);
+        topStr+=" section: ";
+        topStr+=std::to_string(section+1);
+        topStr+="/";
+        topStr+=std::to_string(maxSection);
+        topStr+=")";
         this->topText->SetText(topStr);
         this->topText->SetX(640-(this->topText->GetWidth()/2));
     }
@@ -130,12 +135,10 @@ namespace ui {
             }
             case model::searchMode::TAG:{
                 url+="tagged";
-                for(model::tag tag : searchTags) {
-                    url+=seperator;
-                    url+="tag_id=";
-                    url+=std::to_string(tag.id);
-                    seperator = '&';
-                }
+                url+=seperator;
+                url+="tag_id=";
+                url+=std::to_string(searchTag.id);
+                seperator = '&';
                 break;
             }
         }
@@ -191,16 +194,16 @@ namespace ui {
         char tmpstring[256];
         if(R_FAILED(rc = swkbdCreate(&swkbd, 0))){
             swkbdClose(&swkbd);
-            return;
+            return false;
         }
         swkbdConfigMakePresetDefault(&swkbd);
         if (R_FAILED(rc = swkbdShow(&swkbd, tmpstring, sizeof(tmpstring)))) {
             swkbdClose(&swkbd);
-            return;
+            return false;
         }
         swkbdClose(&swkbd);
         PRINTF("INFO: swkbd-output: %s\n", tmpstring);
-        for(int i = 0; i < sizeof(tmpstring); i++)
+        for(long unsigned int i = 0; i < sizeof(tmpstring); i++)
             if(tmpstring[i] == ' ')
                 tmpstring[i] = '+';
         searchString = tmpstring;
@@ -212,9 +215,8 @@ namespace ui {
         mainApp->LoadLayout(mainApp->detailLayout);
         mainApp->detailLayout->showComicDetail();
     }
-    void MainLayout::tagSearch(std::vector<model::tag> Tags) {
+    void MainLayout::tagSearch() {
         this->mode = model::searchMode::TAG;
-        this->searchTags = Tags;
         this->page = 1;
         this->section = 0;
         loadPage();

@@ -1,12 +1,11 @@
 #include <string>
 #include <switch.h>
-#include <pu/Plutonium>
 #include <stdio.h>
 #include <Swurl.hpp>
 #include "MainApplication.hpp"
-#include "web.hpp"
 #include <thread>
 #include "comicnx.hpp"
+#include "web.hpp"
 
 using namespace swurl;
 model::theme theme;

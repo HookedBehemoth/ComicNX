@@ -1,8 +1,6 @@
 #pragma once
 
 #include <pu/Plutonium>
-#include "web.hpp"
-#include "utl.hpp"
 
 using namespace pu::ui::elm;
 namespace ui {
@@ -14,12 +12,13 @@ namespace ui {
             void showComicDetail();
         private:
             void onItemClick();
-            Rectangle   *topBarRect,
-                        *focusRect;
-            Image *cover, *logo;
-            TextBlock   *title,
-                        *pages,
-                        *uploadDate;
+            Rectangle *topBarRect;
+            Rectangle *focusRect;
+            Image *cover;
+            Image *logo;
+            TextBlock *title;
+            TextBlock *pages;
+            TextBlock *uploadDate;
             Menu *tagMenu;
     };
 }

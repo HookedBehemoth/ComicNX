@@ -37,11 +37,4 @@ namespace utl {
         }
         return "Uploaded " + std::to_string(amount) + " " + relativeString + " ago";
     }
-
-    model::CLang getLanguage(std::string langName) {
-        if(langName == "japanese") return model::CLang::JP;
-        if(langName == "chinese") return model::CLang::CN;
-        if(langName == "english") return model::CLang::UK;
-        return model::CLang::UNKNOWN;
-    }
 }

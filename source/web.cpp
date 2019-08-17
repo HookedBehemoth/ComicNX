@@ -1,6 +1,12 @@
 #include "web.hpp"
 
 namespace web {
+    model::CLang getLanguage(std::string langName) {
+        if(langName == "japanese") return model::CLang::JP;
+        if(langName == "chinese") return model::CLang::CN;
+        if(langName == "english") return model::CLang::UK;
+        return model::CLang::UNKNOWN;
+    }
     model::FType getFtype(const Value& imageJson) {
         std::string fTypeValue = imageJson["t"].GetString();
         if(fTypeValue == std::string("j")){
@@ -63,7 +69,7 @@ namespace web {
             for(const Value& tagJson : tags.GetArray()){
                 model::tag tag = getTag(tagJson);
                 if((tag.type == "language") && ((tag.name == "japanese") || (tag.name == "chinese") || (tag.name == "english"))){
-                    comic->language = utl::getLanguage(tag.name);
+                    comic->language = getLanguage(tag.name);
                     continue;
                 }
                 comic->tags.push_back(tag);
@@ -81,12 +87,12 @@ namespace web {
         }
         return comics;
     }
-    std::vector<model::comic> getComics(const Value& resultJson){
+    std::vector<model::comic> getComicsFromVal(const Value& resultJson){
         std::vector<model::comic> comics;
         if(resultJson.IsArray())
             for(const Value& comic : resultJson.GetArray())
                 comics.push_back(getComic(comic));
-        
+
         return comics;
     }
     model::page getComics(std::string url) {
@@ -99,19 +105,9 @@ namespace web {
         d.Parse(request->response.rawResponseBody.c_str());
         if(d.HasMember("error")) return *page;
         page->maxPages = d["num_pages"].GetInt();
-        page->comics = getComics(d["result"]);
+        page->comics = getComicsFromVal(d["result"]);
         PRINTF("INFO: returning page with %d comics\n", page->comics.size());
         return *page;
-    }
-    bool downloadFile(std::string url, std::string fileName){
-        if(fs::fileExists(fileName)){
-            return false;
-        }
-        PRINTF("INFO: downloading %s to %s...\n", url.c_str(), fileName.c_str());
-        swurl::WebRequest * request = new swurl::WebRequest(url.c_str());
-        PRINTF("INFO: finished making response");
-        swurl::SessionManager::makeRequest(request);
-        return fs::writeFile(fileName, request->response.rawResponseBody);
     }
     std::string getPath(model::comic comic, int page, bool thumb){
         std::string path = "sdmc:/switch/ComicNX/comics/" + comic.id + "/";
@@ -127,8 +123,18 @@ namespace web {
         } else {
             url = FORMAT_IMG + comic.mediaId + "/" + std::to_string(page) + fs::getSuffix(comic.mediaFType[page+1]);
         }
-        downloadFile(url, path);
+        web::downloadFile(url, path);
         return path;
+    }
+    bool downloadFile(std::string url, std::string fileName){
+        if(fs::fileExists(fileName)){
+            return false;
+        }
+        PRINTF("INFO: downloading %s to %s...\n", url.c_str(), fileName.c_str());
+        swurl::WebRequest * request = new swurl::WebRequest(url.c_str());
+        PRINTF("INFO: finished making response");
+        swurl::SessionManager::makeRequest(request);
+        return fs::writeFile(fileName, request->response.rawResponseBody);
     }
     void onProgressChanged(swurl::WebRequest * request, double progress) {
         PRINTF("INFO: progress=%g\n", progress);
