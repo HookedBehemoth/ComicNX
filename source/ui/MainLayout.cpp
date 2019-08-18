@@ -1,5 +1,6 @@
 #include "MainLayout.hpp"
 #include "MainApplication.hpp"
+#include "utl.hpp"
 
 extern model::theme theme;
 namespace ui {
@@ -189,6 +190,11 @@ namespace ui {
         loadPage();
     }
     bool MainLayout::search() {
+        if(!utl::canSwkbd()) {
+            PRINTF("ERROR: Can't launch swkbd because applet mempool is depleted...\n");
+            mainApp->CreateShowDialog("Not possible in this session","You can't access the softwarekeyboard because your CFW doesn't reserve enough memory for it.\n\nIf you use Atmosphère update to at least 0.9.3 or use titleoverride.\n\nIf you use any other CFW use titleoverride (hold down R while starting a game) or switch to Atmosphère.", {"OK", "hä"}, true);
+            return false;
+        }
         Result rc = 0;
         SwkbdConfig swkbd;
         char tmpstring[256];
@@ -207,7 +213,7 @@ namespace ui {
             if(tmpstring[i] == ' ')
                 tmpstring[i] = '+';
         searchString = tmpstring;
-        if(sizeof(tmpstring)>0) return true;
+        if(tmpstring[0] != '\0') return true;
         else return false;
     }
     void MainLayout::onItemClick() {

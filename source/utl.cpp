@@ -1,5 +1,13 @@
 #include "utl.hpp"
 
+#define R_TRY(res_expr) \
+    ({ \
+        const Result _tmp_r_try_rc = res_expr; \
+        if (R_FAILED(_tmp_r_try_rc)) { \
+            return _tmp_r_try_rc; \
+        } \
+    })
+
 using namespace std::chrono;
 namespace utl {
     std::string getRelativeTime(uint64_t timestamp) {
@@ -36,5 +44,16 @@ namespace utl {
             relativeString+="s";
         }
         return "Uploaded " + std::to_string(amount) + " " + relativeString + " ago";
+    }
+
+    bool canSwkbd() {
+        if (appletGetAppletType() == AppletType_Application) return true;
+        u64 total_memory_available;
+        u64 total_memory_usage;
+        u32 rc;
+        R_TRY(svcGetInfo(&total_memory_available, 6, CUR_PROCESS_HANDLE, 0));
+        R_TRY(svcGetInfo(&total_memory_usage, 7, CUR_PROCESS_HANDLE, 0));
+        if(total_memory_available - total_memory_usage < 0x8000000) return false;
+        return true;
     }
 }
