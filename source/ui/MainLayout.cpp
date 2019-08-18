@@ -51,7 +51,7 @@ namespace ui {
     }
     void MainLayout::next() {
         PRINTF("INFO: switched from page %d and section %d to...\n", this->page, this->section);
-        if(this->section == (this->maxSection-1)) {
+        if(this->section >= (this->maxSection-1)) {
             if (this->page < this->maxPage) {
                 this->page++;
                 this->section = 0;
@@ -84,9 +84,11 @@ namespace ui {
     void MainLayout::loadSection() {
         PRINTF("DEBUG: %d/%d, %d/%d\n", section, maxSection, page, maxPage);
         comicMenu->ClearItems();
-        for(short i=0; i<+5; i++) {
-            if((i+this->section*5)<comics.size()) addComic(comics[i+this->section*5]);
-        }
+        if(comics.size()) {
+            for(short i=0; i<+5; i++) {
+                if((i+this->section*5)<comics.size()) addComic(comics[i+this->section*5]);
+            }
+        } else comicMenu->AddItem(new MenuItem("nothing found :/"));
         this->comicMenu->SetSelectedIndex(0);
         std::string topStr, tmpString;
         tmpString = searchString;
