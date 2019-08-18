@@ -50,7 +50,6 @@ namespace utl {
         if (appletGetAppletType() == AppletType_Application) return true;
         u64 total_memory_available;
         u64 total_memory_usage;
-        u32 rc;
         R_TRY(svcGetInfo(&total_memory_available, 6, CUR_PROCESS_HANDLE, 0));
         R_TRY(svcGetInfo(&total_memory_usage, 7, CUR_PROCESS_HANDLE, 0));
         if(total_memory_available - total_memory_usage < 0x8000000) return false;
