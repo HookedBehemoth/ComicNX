@@ -194,7 +194,7 @@ namespace ui {
     bool MainLayout::search() {
         if(!utl::canSwkbd()) {
             PRINTF("ERROR: Can't launch swkbd because applet mempool is depleted...\n");
-            mainApp->CreateShowDialog("Not possible in this session","You can't access the softwarekeyboard because your CFW doesn't reserve enough memory for it.\n\nIf you use Atmosphère update to at least 0.9.3 or use titleoverride.\n\nIf you use any other CFW use titleoverride (hold down R while starting a game) or switch to Atmosphère.", {"OK", "hä"}, true);
+            mainApp->CreateShowDialog("Not possible in this session","You can't access the softwarekeyboard because your CFW doesn't reserve enough memory for it.\n\nIf you use Atmosphère update to at least 0.9.3 or use titleoverride.\n\nIf you use any other CFW use titleoverride (hold down R while starting a game) or switch to Atmosphère.", {"OK"}, true);
             return false;
         }
         Result rc = 0;
