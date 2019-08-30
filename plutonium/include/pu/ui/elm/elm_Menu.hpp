@@ -26,8 +26,6 @@ namespace pu::ui::elm
             MenuItem(String Name);
             String GetName();
             void SetName(String Name);
-            String GetExtend();
-            void SetExtend(String Name);
             Color GetColor();
             void SetColor(Color Color);
             void AddOnClick(std::function<void()> Callback, u64 Key = KEY_A);
@@ -36,20 +34,22 @@ namespace pu::ui::elm
             u64 GetCallbackKey(s32 Index);
             std::string GetIcon();
             void SetIcon(std::string Icon);
-            std::string GetExtendIcon();
-            void SetExtendIcon(std::string ExtendedIcon);
             bool HasIcon();
-            bool HasExtend();
-            bool HasExtendIcon();
+            std::string GetRichName();
+            void SetRichName(std::string Name);
+            bool HasRichName();
+            std::string GetRichIcon();
+            void SetRichIcon(std::string Icon);
+            bool HasRichIcon();
         private:
             String name;
-            String extend;
             Color clr;
             bool hasicon;
-            bool hasextend;
-            bool hasextendicon;
+            bool hasrichname;
+            bool hasrichicon;
             std::string icon;
-            std::string extendIcon;
+            std::string richname;
+            std::string richicon;
             std::vector<std::function<void()>> cbs;
             std::vector<u64> cbipts;
     };
@@ -106,10 +106,11 @@ namespace pu::ui::elm
             std::chrono::time_point<std::chrono::steady_clock> basetime;
             std::function<void()> onselch;
             std::vector<MenuItem*> itms;
-            render::NativeFont font;
+            render::NativeFont basefont;
+            render::NativeFont richfont;
             std::vector<render::NativeTexture> loadednames;
             std::vector<render::NativeTexture> loadedicons;
-            std::vector<render::NativeTexture> loadedext;
-            std::vector<render::NativeTexture> loadedexticons;
+            std::vector<render::NativeTexture> loadedrichnames;
+            std::vector<render::NativeTexture> loadedrichicons;
     };
 }

@@ -53,7 +53,8 @@ ROMFS		:=	romfs
 ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections -fpermissive \
-			$(ARCH) $(DEFINES)
+			$(ARCH) $(DEFINES) \
+			-DDEBUG
 
 CFLAGS	+=	$(INCLUDE) -D__SWITCH__
 
@@ -82,7 +83,7 @@ LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/plutonium
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
 
-export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export OUTPUT	:=	$(CURDIR)/out/$(TARGET)
 export TOPDIR	:=	$(CURDIR)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
@@ -151,7 +152,7 @@ ifeq ($(strip $(NO_ICON)),)
 endif
 
 ifeq ($(strip $(NO_NACP)),)
-	export NROFLAGS += --nacp=$(CURDIR)/$(TARGET).nacp
+	export NROFLAGS += --nacp=$(OUTPUT).nacp
 endif
 
 ifneq ($(APP_TITLEID),)
@@ -169,16 +170,13 @@ all: $(BUILD)
 
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
+	@[ -d $(CURDIR)/out ] || mkdir -p $(CURDIR)/out
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-ifeq ($(strip $(APP_JSON)),)
-	@rm -fr $(BUILD) $(TARGET).nro $(TARGET).nacp $(TARGET).elf
-else
-	@rm -fr $(BUILD) $(TARGET).nsp $(TARGET).nso $(TARGET).npdm $(TARGET).elf
-endif
+	@rm -fr $(BUILD) $(CURDIR)/out
 
 
 #---------------------------------------------------------------------------------

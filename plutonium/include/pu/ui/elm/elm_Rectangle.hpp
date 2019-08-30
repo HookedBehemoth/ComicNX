@@ -19,7 +19,7 @@ namespace pu::ui::elm
     class Rectangle : public Element
     {
         public:
-            Rectangle(s32 X, s32 Y, s32 Width, s32 Height, Color RecColor, s32 BorderRadius = 0);
+            Rectangle(s32 X, s32 Y, s32 Width, s32 Height, Color RecColor, s32 Radius = 0);
             s32 GetX();
             void SetX(s32 X);
             s32 GetY();
@@ -28,18 +28,18 @@ namespace pu::ui::elm
             void SetWidth(s32 Width);
             s32 GetHeight();
             void SetHeight(s32 Height);
-            s32 GetBorderRadius();
-            void SetBorderRadius(s32 Radius);
             Color GetColor();
             void SetColor(Color RecColor);
+            s32 GetRadius();
+            void SetRadius(s32 Radius);
             void OnRender(render::Renderer *Drawer);
             void OnInput(u64 Down, u64 Up, u64 Held, bool Touch, bool Focus);
         private:
-            s32 borderr;
             s32 x;
             s32 y;
             s32 w;
             s32 h;
+            s32 r;
             Color clr;
     };
 }

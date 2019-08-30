@@ -13,7 +13,7 @@ namespace ui {
     DetailLayout::DetailLayout() : pu::ui::Layout() {
         this->SetBackgroundColor(theme.background);
         this->topBarRect = new Rectangle(0, 0, 1280, 100, theme.hoverColor);
-        this->focusRect = new Rectangle(40, 120, 1200, 600, theme.hoverColor);
+        this->focusRect = new Rectangle(40, 120, 1200, 620, theme.hoverColor, 20);
         this->cover = new Image(200, 200, "romfs:/shrek.png");
         this->logo = new Image(14, 26, "romfs:/logo.png");
         this->logo->SetWidth(111);

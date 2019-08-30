@@ -166,8 +166,8 @@ namespace ui {
         MenuItem *item = new MenuItem(Comic.name);
         item->SetColor(theme.textColor);
         item->SetIcon(web::getPath(Comic, 1, true));
-        item->SetExtend(Comic.id);
-        if(Comic.language != model::CLang::UNKNOWN) item->SetExtendIcon(fs::getFlagPath(Comic.language));
+        item->SetRichName(Comic.id);
+        if(Comic.language != model::CLang::UNKNOWN) item->SetRichIcon(fs::getFlagPath(Comic.language));
         item->AddOnClick(std::bind(&MainLayout::onItemClick, this));
         this->comicMenu->AddItem(item);
     }

@@ -6,7 +6,7 @@
         {
             "label": "make and send to main",
             "type": "shell",
-            "command": "make -j8 && nxlink -a 192.168.10.13 *.nro",
+            "command": "make -j8 && nxlink -a 192.168.10.13 out/*.nro",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -16,7 +16,7 @@
         {
             "label": "make and debug",
             "type": "shell",
-            "command": "make -j8 && nxlink -a 192.168.10.13 *.nro -s",
+            "command": "make -j8 && nxlink -a 192.168.10.13 out/*.nro -s",
             "group": {
                 "kind": "build",
                 "isDefault": true
