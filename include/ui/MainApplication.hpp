@@ -5,6 +5,7 @@
 #include "MainLayout.hpp"
 #include "DetailLayout.hpp"
 #include "ImageLayout.hpp"
+#include "PCTLFailLayout.hpp"
 #include "web.hpp"
 
 namespace ui {
@@ -12,8 +13,12 @@ namespace ui {
         public:
             MainApplication();
             ~MainApplication();
+            void checkPermission();
             MainLayout *mainLayout;
             DetailLayout *detailLayout;
             ImageLayout *imageLayout;
+            PCTLFailLayout *pctlFailLayout;
+        private:
+            void allow();
     };
 }
