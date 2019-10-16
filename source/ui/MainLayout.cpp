@@ -16,8 +16,9 @@ namespace ui {
         this->logo->SetHeight(48);
         this->topText = TextBlock::New(600, 30, "loading...", 40);
         this->topText->SetColor(theme.textColor);
+        this->topText->SetHorizontalAlign(HorizontalAlign::Center);
         this->comicMenu = RichMenu::New(40, 120, 1200, theme.hoverColor, 120, 5);
-        //this->comicMenu->AddItem(RichMenuItem::New("fuck"));
+        this->comicMenu->SetCallback(std::bind(&MainLayout::onItemClick, this));
         this->Add(this->topBarRect);    
         this->Add(this->logo);
         this->Add(this->topText);
@@ -45,45 +46,32 @@ namespace ui {
         }
     }
     void MainLayout::next() {
-        PRINTF("INFO: switched from page %d and section %d to...\n", this->page, this->section);
-        if(this->section >= (this->maxSection-1)) {
-            if (this->page < this->maxPage) {
-                this->page++;
-                this->section = 0;
-                loadPage();
-            } else {
-                return;
-            }
+        if (this->page < this->maxPage) {
+            this->page++;
+            PRINTF("INFO: loading page %d...\n", this->page);
+            loadPage();
         } else {
-            section++;
+            PRINTF("INFO: already at the end");
+            return;
         }
-        PRINTF("INFO: ...page %d and section %d\n", this->page, this->section);
-        loadSection();
     }
     void MainLayout::prev() {
-        PRINTF("INFO: switched from page %d and section %d to...\n", this->page, this->section);
-        if(this->section == 0) {
-            if(this->page > 1) {
-                this->page--;
-                this->section = 4;
-                loadPage();
-            } else {
-                return;
-            }
+        if(this->page > 1) {
+            PRINTF("INFO: loading page %d...\n", this->page);
+            this->page--;
+            loadPage();
         } else {
-            section--;
+            PRINTF("INFO: already at the start");
+            return;
         }
-        PRINTF("INFO: ...page %d and section %d\n", this->page, this->section);
-        loadSection();
     }
-    void MainLayout::loadSection() {
-        PRINTF("DEBUG: %d/%d, %d/%d\n", section, maxSection, page, maxPage);
+    void MainLayout::displayPage() {
+        PRINTF("DEBUG: %d/%d\n", page, maxPage);
         comicMenu->ClearItems();
-        if(comics.size()) {
-            for(short i=0; i<+5; i++) {
-                if((i+this->section*5)<comics.size()) addComic(comics[i+this->section*5]);
-            }
-        } //else comicMenu->AddItem(RichMenuItem::New("nothing found :/"));
+        for(model::comic comic: comics) {
+            PRINTF("INFO: adding comic %s\n", comic.id.c_str());;
+            this->comicMenu->AddItem(new model::comic(comic));
+        }
         this->comicMenu->SetSelectedIndex(0);
         std::string topStr, tmpString;
         tmpString = searchString;
@@ -109,13 +97,8 @@ namespace ui {
         topStr+=std::to_string(page);
         topStr+="/";
         topStr+=std::to_string(maxPage);
-        topStr+=" section: ";
-        topStr+=std::to_string(section+1);
-        topStr+="/";
-        topStr+=std::to_string(maxSection);
         topStr+=")";
         this->topText->SetText(topStr);
-        this->topText->SetX(640-(this->topText->GetWidth()/2));
     }
     void MainLayout::loadPage() {
         std::string url = web::FORMAT_API;
@@ -151,20 +134,7 @@ namespace ui {
 
         this->maxPage = page.maxPages;
         this->comics = page.comics;
-        maxSection = comics.size()/5;
-        if(this->comics.size()%5) maxSection +=1;
-        PRINTF("INFO: loading section %d\n", this->section);
-        loadSection();
-    }
-    void MainLayout::addComic(model::comic Comic) {
-        PRINTF("INFO: adding comic %s\n", Comic.id.c_str());;
-        RichMenuItem::Ref item = RichMenuItem::New(Comic.name);
-        item->clr = theme.textColor;
-        item->SetIcon(web::getPath(Comic, 1, true));
-        item->richname = Comic.id;
-        if(Comic.language != model::CLang::UNKNOWN) item->SetRichIcon(fs::getFlagPath(Comic.language));
-        item->AddOnClick(std::bind(&MainLayout::onItemClick, this));
-        this->comicMenu->AddItem(item);
+        displayPage();
     }
     void MainLayout::showOptions() {
         int opts = mainApp->CreateShowDialog("Category", "what category do you want to see?", {"all", "search", "popular-toggle", "tags (TODO)"}, true);
@@ -174,7 +144,6 @@ namespace ui {
         } else if(opts == 1) {
             if(!search()) return;
             this->page = 1;
-            this->section = 0;
             this->mode = model::searchMode::SEARCH;
         } else if(opts == 2) {
             if(mode == 0){
@@ -214,14 +183,13 @@ namespace ui {
         else return false;
     }
     void MainLayout::onItemClick() {
-        comic = this->comics[this->comicMenu->GetSelectedIndex()+5*section];
+        comic = this->comics[this->comicMenu->GetSelectedIndex()];
         mainApp->LoadLayout(mainApp->detailLayout);
         mainApp->detailLayout->showComicDetail();
     }
     void MainLayout::tagSearch() {
         this->mode = model::searchMode::TAG;
         this->page = 1;
-        this->section = 0;
         loadPage();
     }
 }

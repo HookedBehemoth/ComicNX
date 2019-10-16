@@ -105,7 +105,7 @@ namespace web {
         if(d.HasMember("error")) return *page;
         page->maxPages = d["num_pages"].GetInt();
         page->comics = getComicsFromVal(d["result"]);
-        PRINTF("INFO: returning page with %d comics\n", page->comics.size());
+        PRINTF("INFO: returning page with %lx comics\n", page->comics.size());
         return *page;
     }
     std::string getPath(model::comic comic, int page, bool thumb){
@@ -139,7 +139,7 @@ namespace web {
         PRINTF("INFO: progress=%g\n", progress);
     }
     void onCompleted(swurl::WebRequest * request) {
-        PRINTF("INFO: Download Completed with status code %d\n", request->response.statusCode);
+        PRINTF("INFO: Download Completed with status code %lx\n", request->response.statusCode);
     }
     void onError(swurl::WebRequest * request, std::string error) {
         PRINTF("ERROR:  %s\n", error.c_str());

@@ -16,9 +16,8 @@ namespace ui {
         private:
             void next();
             void prev();
-            void loadSection();
+            void displayPage();
             void openSelectedComic();
-            void addComic(model::comic Comic);
             void showOptions();
             bool search();
             void onItemClick();
@@ -29,7 +28,7 @@ namespace ui {
             std::vector<model::comic> comics;
             std::string searchString;
             model::searchMode mode = model::searchMode::ALL;
-            int page = 1, maxPage = 1, section = 0, maxSection = 0;
+            int page = 1, maxPage = 1;
             bool popular = false;
     };
 }

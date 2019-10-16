@@ -23,7 +23,7 @@ namespace ui {
     void MainApplication::checkPermission() {
         pctlInitialize();
         Result rc;
-        bool pcactive;
+        bool pcactive = false;
         rc = pctlIsRestrictionEnabled(&pcactive);
         if(R_SUCCEEDED(rc) && pcactive) {
             rc = pctlauthShow(true);
@@ -35,7 +35,7 @@ namespace ui {
         } else {
             allow();
         }
-        printf("rc: %d\npcactive: %b", rc, pcactive);
+        printf("rc: %d\npcactive: %s", rc, pcactive ? "true" : "false");
         pctlExit();
     }
 

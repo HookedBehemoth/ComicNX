@@ -17,30 +17,10 @@
 #include <vector>
 #include <chrono>
 #include <functional>
+#include "web.hpp"
 
 namespace pu::ui::elm
 {
-    class RichMenuItem
-    {
-        public:
-            RichMenuItem(String Name);
-            PU_SMART_CTOR(RichMenuItem)
-
-            void AddOnClick(std::function<void()> Callback, u64 Key = KEY_A);
-            s32 GetCallbackCount();
-            std::function<void()> GetCallback(s32 Index);
-            u64 GetCallbackKey(s32 Index);
-            void SetIcon(std::string Icon);
-            void SetRichIcon(std::string Icon);
-            String name;
-            Color clr;
-            std::string icon;
-            std::string richname;
-            std::string richicon;
-            std::vector<std::function<void()>> cbs;
-            std::vector<u64> cbipts;
-    };
-
     class RichMenu : public Element
     {
         public:
@@ -64,11 +44,12 @@ namespace pu::ui::elm
             void SetOnFocusColor(Color Color);
             Color GetScrollbarColor();
             void SetScrollbarColor(Color Color);
+            void SetCallback(std::function<void()> Callback);
             void SetOnSelectionChanged(std::function<void()> Callback);
-            void AddItem(RichMenuItem::Ref &Item);
+            void AddItem(model::comic *);
             void ClearItems();
             void SetCooldownEnabled(bool Cooldown);
-            RichMenuItem::Ref &GetSelectedItem();
+            model::comic * GetSelectedItem();
             s32 GetSelectedIndex();
             void SetSelectedIndex(s32 Index);
             void OnRender(render::Renderer::Ref &Drawer, s32 X, s32 Y);
@@ -92,8 +73,9 @@ namespace pu::ui::elm
             bool icdown;
             int basestatus;
             std::chrono::time_point<std::chrono::steady_clock> basetime;
+            std::function<void()> onclick;
             std::function<void()> onselch;
-            std::vector<RichMenuItem::Ref> itms;
+            std::vector<model::comic *> itms;
             render::NativeFont basefont;
             render::NativeFont richfont;
             std::vector<render::NativeTexture> loadednames;

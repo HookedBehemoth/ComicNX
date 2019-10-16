@@ -12,6 +12,8 @@ namespace ui {
         this->image->SetHorizontalAlign(HorizontalAlign::Center);
         this->image->SetVerticalAlign(VerticalAlign::Center);
         this->pageInfo = TextBlock::New(5, 690, "?/?");
+        this->pageInfo->SetHorizontalAlign(HorizontalAlign::Left);
+        this->pageInfo->SetVerticalAlign(VerticalAlign::Down);
         this->pageInfo->SetColor(theme.textColor);
         this->Add(this->image);
         this->Add(pageInfo);

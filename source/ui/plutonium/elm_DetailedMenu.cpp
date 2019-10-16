@@ -1,59 +1,8 @@
 #include "ui/plutonium/elm_DetailedMenu.hpp"
 
+extern model::theme theme;
 namespace pu::ui::elm
 {
-    RichMenuItem::RichMenuItem(String Name)
-    {
-        this->clr = { 10, 10, 10, 255 };
-        this->name = Name;
-    }
-
-    void RichMenuItem::AddOnClick(std::function<void()> Callback, u64 Key)
-    {
-        this->cbs.push_back(Callback);
-        this->cbipts.push_back(Key);
-    }
-
-    s32 RichMenuItem::GetCallbackCount()
-    {
-        return this->cbs.size();
-    }
-
-    std::function<void()> RichMenuItem::GetCallback(s32 Index)
-    {
-        if(this->cbs.empty()) return [&](){};
-        return this->cbs[Index];
-    }
-
-    u64 RichMenuItem::GetCallbackKey(s32 Index)
-    {
-        return this->cbipts[Index];
-    }
-
-    void RichMenuItem::SetIcon(std::string Icon)
-    {
-        std::ifstream ifs(Icon);
-        if(ifs.good())
-        {
-            this->icon = Icon;
-        } else {
-            this->richicon = "romfs:/shrek.png";
-        }
-        ifs.close();
-    }
-
-    void RichMenuItem::SetRichIcon(std::string Icon)
-    {
-        std::ifstream ifs(Icon);
-        if(ifs.good())
-        {
-            this->richicon = Icon;
-        } else {
-            this->richicon = "romfs:/shrek.png";
-        }
-        ifs.close();
-    }
-
     RichMenu::RichMenu(s32 X, s32 Y, s32 Width, Color OptionColor, s32 ItemSize, s32 ItemsToShow) : Element::Element()
     {
         this->x = X;
@@ -162,14 +111,19 @@ namespace pu::ui::elm
         this->scb = Color;
     }
 
+    void RichMenu::SetCallback(std::function<void()> Callback)
+    {
+        this->onclick = Callback;
+    }
+
     void RichMenu::SetOnSelectionChanged(std::function<void()> Callback)
     {
         this->onselch = Callback;
     }
 
-    void RichMenu::AddItem(RichMenuItem::Ref &qItem)
+    void RichMenu::AddItem(model::comic * comic)
     {
-        this->itms.push_back(qItem);
+        this->itms.push_back(comic);
     }
 
     void RichMenu::ClearItems()
@@ -186,7 +140,7 @@ namespace pu::ui::elm
         this->icdown = Cooldown;
     }
 
-    RichMenuItem::Ref &RichMenu::GetSelectedItem()
+    model::comic * RichMenu::GetSelectedItem()
     {
         return this->itms[this->isel];
     }
@@ -270,13 +224,13 @@ namespace pu::ui::elm
                     else Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
                 }
                 else Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
-                RichMenuItem::Ref itm = this->itms[i];
+                model::comic * itm = this->itms[i];
                 s32 xh = render::GetTextureHeight(curname);
                 s32 tx = (cx + 25);
                 s32 ty;
-                if(itm->richname.empty()) ty = ((ch - xh) / 2) + cy;
+                if(itm->id.empty()) ty = ((ch - xh) / 2) + cy;
                 else ty = (ch/3) - (xh/2) + cy;
-                if(!itm->icon.empty())
+                if(!itm->mediaId.empty())
                 {
                     float factor = (float)render::GetTextureHeight(curicon)/(float)render::GetTextureWidth(curicon);
                     s32 icw = (this->isize - 10);
@@ -295,12 +249,12 @@ namespace pu::ui::elm
                     }
                     Drawer->RenderTexture(curicon, icx, icy, { -1, icw, ich, -1.0f });
                 }
-                if(!itm->richname.empty())
+                if(!itm->id.empty())
                 {
                     s32 rxh = render::GetTextureHeight(currichname);
                     s32 rtx = tx;
                     s32 rty = cy + (ch/3)*2 + ((ch/3) - rxh)/2;
-                    if(!itm->richicon.empty())
+                    if(itm->language != model::CLang::UNKNOWN)
                     {
                         float rfactor = (float)render::GetTextureHeight(currichicon)/(float)render::GetTextureWidth(currichicon);
                         s32 ricw = (ch/3);
@@ -392,7 +346,7 @@ namespace pu::ui::elm
                 if((this->selfact >= 255) && (this->pselfact <= 0))
                 {
                     if(this->icdown) this->icdown = false;
-                    else (this->itms[this->isel]->GetCallback(0))();
+                    else (this->onclick)();
                     this->dtouch = false;
                 }
             }
@@ -499,15 +453,11 @@ namespace pu::ui::elm
                 }
                 else
                 {
-                    s32 ipc = this->itms[this->isel]->GetCallbackCount();
-                    if(ipc > 0) for(s32 i = 0; i < ipc; i++)
-                    {
-                        if(Down & this->itms[this->isel]->GetCallbackKey(i))
+                        if(Down & KEY_A)
                         {
                             if(this->icdown) this->icdown = false;
-                            else (this->itms[this->isel]->GetCallback(i))();
+                            else (this->onclick)();
                         }
-                    }
                 }
             }
         }
@@ -528,34 +478,22 @@ namespace pu::ui::elm
         if((its + this->fisel) > this->itms.size()) its = this->itms.size() - this->fisel;
         for(s32 i = this->fisel; i < (its + this->fisel); i++)
         {
+            /* name */
             auto strname = this->itms[i]->name;
-            auto tex = render::RenderText(this->basefont, strname, this->itms[i]->clr);
+            auto tex = render::RenderText(this->basefont, strname, theme.textColor);
             this->loadednames.push_back(tex);
-            if(!this->itms[i]->icon.empty())
-            {
-                auto stricon = this->itms[i]->icon;
-                auto icontex = render::LoadImage(stricon);
-                this->loadedicons.push_back(icontex);
-            }
-            else this->loadedicons.push_back(NULL);
-            if(!this->itms[i]->richname.empty())
-            {
-                auto rstrname = this->itms[i]->richname;
-                auto rtex = render::RenderText(this->richfont, rstrname, this->itms[i]->clr);
-                this->loadedrichnames.push_back(rtex);
-                if(!this->itms[i]->richicon.empty())
-                {
-                    auto rstricon = this->itms[i]->richicon;
-                    auto ricontex = render::LoadImage(rstricon);
-                    this->loadedrichicons.push_back(ricontex);
-                }
-                else this->loadedrichicons.push_back(NULL);
-            }
-            else
-            {
-                this->loadedrichnames.push_back(NULL);
-                this->loadedrichicons.push_back(NULL);
-            }
+            /* icon */
+            auto stricon = web::getPath(*itms[i], 1, true);
+            auto icontex = render::LoadImage(stricon);
+            this->loadedicons.push_back(icontex);
+            /* rich name */
+            auto rstrname = this->itms[i]->id;
+            auto rtex = render::RenderText(this->richfont, rstrname, theme.textColor);
+            this->loadedrichnames.push_back(rtex);
+            /* rich icon */
+            auto rstricon = fs::getFlagPath(itms[i]->language);
+            auto ricontex = render::LoadImage(rstricon);
+            this->loadedrichicons.push_back(ricontex);
         }
     }
 }

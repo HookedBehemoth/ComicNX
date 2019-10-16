@@ -19,6 +19,8 @@ namespace ui {
         this->logo->SetWidth(111);
         this->logo->SetHeight(48);
         this->title = TextBlock::New(600, 30, "loading...", 40);
+        this->title->SetHorizontalAlign(HorizontalAlign::Center);
+        this->title->SetVerticalAlign(VerticalAlign::Up);
         this->title->SetColor(theme.textColor);
         this->tagMenu = Menu::New(640, 130, 590, theme.textColor, 50, 10);
         this->tagMenu->SetColor(theme.tagBg);
