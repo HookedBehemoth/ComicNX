@@ -9,6 +9,8 @@ namespace ui {
     ImageLayout::ImageLayout() : pu::ui::Layout() {
         this->SetBackgroundColor(theme.background);
         this->image = Image::New(0,0,"romfs:/shrek.png");
+        this->image->SetHorizontalAlign(HorizontalAlign::Center);
+        this->image->SetVerticalAlign(VerticalAlign::Center);
         this->pageInfo = TextBlock::New(5, 690, "?/?");
         this->pageInfo->SetColor(theme.textColor);
         this->Add(this->image);
@@ -25,12 +27,20 @@ namespace ui {
     }
     void ImageLayout::setImage(std::string path) {
         this->image->SetImage(path);
+        this->imgHeight = this->image->GetHeight();
+        this->imgWidth = this->image->GetWidth();
         fixLayout();
         this->pageInfo->SetText(std::to_string(position) + "/" + std::to_string(comic.pages));
     }
     void ImageLayout::fixLayout() {
-        s32 aWSpace = this->wSpace - this->image->GetX();
-        s32 aHSpace = this->hSpace - this->image->GetY();
+        this->image->SetWidth(imgWidth);
+        this->image->SetHeight(imgHeight);
+        s32 aWSpace = this->wSpace;
+        s32 aHSpace = this->hSpace;
+        if(isFlipped) {
+            aWSpace = this->hSpace;
+            aHSpace = this->wSpace;
+        }
         if(this->image->GetWidth() > aWSpace) {
             this->image->SetHeight((image->GetHeight()*aWSpace)/this->image->GetWidth());
             this->image->SetWidth(aWSpace);
@@ -39,8 +49,7 @@ namespace ui {
             this->image->SetWidth((this->image->GetWidth()*aHSpace)/this->image->GetHeight());
             this->image->SetHeight(aHSpace);
         }
-        this->image->SetX(640-(this->image->GetWidth()/2));
-        this->image->SetY(360-(this->image->GetHeight()/2));
+
     }
     void ImageLayout::next(){
         if(this->position < comic.pages){
@@ -62,10 +71,20 @@ namespace ui {
         if(Down & KEY_B) {
             mainApp->LoadLayout(mainApp->detailLayout);
         }
-        if((Down & KEY_RIGHT) || (Down & KEY_ZR) || (Down & KEY_R)) {
+        if(Down & KEY_X) {
+            if(isFlipped) {
+                this->image->SetRotation(0);
+                isFlipped = false;
+            } else {
+                this->image->SetRotation(90);
+                isFlipped = true;
+            }
+            fixLayout();
+        }
+        if((Down & KEY_RIGHT) || (Down & KEY_ZR) || (Down & KEY_R) || (Down & KEY_DOWN)) {
             this->next();
         }
-        if((Down & KEY_LEFT) || (Down & KEY_ZL) || (Down & KEY_L)) {
+        if((Down & KEY_LEFT) || (Down & KEY_ZL) || (Down & KEY_L) || (Down & KEY_UP)) {
             this->prev();
         }
     }

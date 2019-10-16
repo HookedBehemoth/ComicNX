@@ -16,7 +16,10 @@ namespace ui {
         private:
             const s32 wSpace = 1280;
             const s32 hSpace = 720;
+            s32 imgWidth;
+            s32 imgHeight;
             int position;
+            bool isFlipped = false;
             void setImage(std::string path);
             void fixLayout();
             Image::Ref image;
