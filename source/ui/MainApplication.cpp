@@ -5,25 +5,21 @@ extern model::theme theme;
 namespace ui {
     MainApplication *mainApp;
 
-    MainApplication::MainApplication() : pu::ui::Application() {
+    void MainApplication::OnLoad() {
         mainApp = this;
 
-        this->mainLayout = new MainLayout();
-        this->mainLayout->SetOnInput(std::bind(&MainLayout::onInput, this->mainLayout, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-        this->detailLayout = new DetailLayout();
-        this->detailLayout->SetOnInput(std::bind(&DetailLayout::onInput, this->detailLayout, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-        this->imageLayout = new ImageLayout();
-        this->imageLayout->SetOnInput(std::bind(&ImageLayout::onInput, this->imageLayout, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-        this->pctlFailLayout = new PCTLFailLayout();
-        this->pctlFailLayout->SetOnInput(std::bind(&PCTLFailLayout::onInput, this->pctlFailLayout, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+        this->mainLayout = MainLayout::New();
+        this->mainLayout->SetOnInput(std::bind(&MainLayout::onInput, this->mainLayout, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+        this->detailLayout = DetailLayout::New();
+        this->detailLayout->SetOnInput(std::bind(&DetailLayout::onInput, this->detailLayout, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+        this->imageLayout = ImageLayout::New();
+        this->imageLayout->SetOnInput(std::bind(&ImageLayout::onInput, this->imageLayout, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+        this->pctlFailLayout = PCTLFailLayout::New();
+        this->pctlFailLayout->SetOnInput(std::bind(&PCTLFailLayout::onInput, this->pctlFailLayout, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
         checkPermission();
     }
-
-    MainApplication::~MainApplication() {
-        delete(this->mainLayout);
-    }
-
+    
     void MainApplication::checkPermission() {
         pctlInitialize();
         Result rc;

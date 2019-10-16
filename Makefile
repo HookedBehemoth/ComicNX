@@ -43,8 +43,8 @@ APP_VERSION	:=	1.0.0
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 DATA		:=	data
-SOURCES		:=	source source/ui
-INCLUDES	:=	include include/rapidjson include/ui
+SOURCES		:=	source source/ui source/ui/plutonium
+INCLUDES	:=	include include/rapidjson include/ui include/ui/plutonium
 ROMFS		:=	romfs
 
 #---------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ LIBS	:= -lSwurl -lcurl -lz -lmbedtls -lmbedx509 -lpu -lmbedcrypto -lnx -lfreetyp
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/plutonium
+LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/Plutonium/Plutonium/Output $(CURDIR)/swurl/
 
 
 #---------------------------------------------------------------------------------
@@ -171,11 +171,15 @@ all: $(BUILD)
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@[ -d $(CURDIR)/out ] || mkdir -p $(CURDIR)/out
+	@$(MAKE) --no-print-directory -C Plutonium/Plutonium -f Makefile
+	@$(MAKE) --no-print-directory -C swurl -f Makefile
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
+	@$(MAKE) --no-print-directory -C Plutonium/Plutonium -f Makefile clean
+	@$(MAKE) --no-print-directory -C swurl -f Makefile clean
 	@rm -fr $(BUILD) $(CURDIR)/out
 
 

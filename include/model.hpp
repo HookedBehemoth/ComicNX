@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <pu/ui/ui_Color.hpp>
+#include <pu/ui/ui_Types.hpp>
 
 namespace model{
     enum FType {JPG, PNG, GIF, UNSUPPORTED};

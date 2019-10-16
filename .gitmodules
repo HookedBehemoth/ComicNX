@@ -1,0 +1,6 @@
+[submodule "Plutonium"]
+	path = Plutonium
+	url = https://github.com/XorTroll/Plutonium
+[submodule "swurl"]
+	path = swurl
+	url = https://github.com/atlasnx/swurl

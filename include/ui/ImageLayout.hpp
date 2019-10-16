@@ -7,10 +7,10 @@ namespace ui {
     class ImageLayout : public pu::ui::Layout {
         public:
             ImageLayout();
-            ~ImageLayout();
+            PU_SMART_CTOR(ImageLayout)
             void loadComic();
             void loadComicEnd();
-            void onInput(u64 Down, u64 Up, u64 Held);
+            void onInput(u64 Down, u64 Up, u64 Held, pu::ui::Touch Pos);
             void next();
             void prev();
         private:
@@ -19,7 +19,7 @@ namespace ui {
             int position;
             void setImage(std::string path);
             void fixLayout();
-            Image *image;
-            TextBlock *pageInfo;
+            Image::Ref image;
+            TextBlock::Ref pageInfo;
     };
 }

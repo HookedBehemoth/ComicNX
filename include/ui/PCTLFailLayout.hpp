@@ -7,13 +7,13 @@ namespace ui {
     class PCTLFailLayout : public pu::ui::Layout {
         public:
             PCTLFailLayout();
-            ~PCTLFailLayout();
-            void onInput(u64 Down, u64 Up, u64 Held);
+            PU_SMART_CTOR(PCTLFailLayout)
+            void onInput(u64 Down, u64 Up, u64 Held, pu::ui::Touch Pos);
         private:
-            Rectangle *topBarRect;
-            Rectangle *focusRect;
-            Image *logo;
-            TextBlock *title;
-            TextBlock *errorText;
+            Rectangle::Ref topBarRect;
+            Rectangle::Ref focusRect;
+            Image::Ref logo;
+            TextBlock::Ref title;
+            TextBlock::Ref errorText;
     };
 }

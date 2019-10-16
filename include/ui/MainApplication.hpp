@@ -11,13 +11,16 @@
 namespace ui {
     class MainApplication : public pu::ui::Application {
         public:
-            MainApplication();
-            ~MainApplication();
+            using Application::Application;
+            PU_SMART_CTOR(MainApplication)
+
+            void OnLoad() override;
+
             void checkPermission();
-            MainLayout *mainLayout;
-            DetailLayout *detailLayout;
-            ImageLayout *imageLayout;
-            PCTLFailLayout *pctlFailLayout;
+            MainLayout::Ref mainLayout;
+            DetailLayout::Ref detailLayout;
+            ImageLayout::Ref imageLayout;
+            PCTLFailLayout::Ref pctlFailLayout;
         private:
             void allow();
     };

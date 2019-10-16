@@ -40,10 +40,11 @@ int main(int argc, char **argv) {
     init();
 
     PRINTF("INFO: starting application...\n");
-    ui::MainApplication *amain = new ui::MainApplication();
+    auto renderer = pu::ui::render::Renderer::New(SDL_INIT_EVERYTHING, pu::ui::render::RendererInitOptions::RendererNoSound, pu::ui::render::RendererHardwareFlags);
+    auto amain = ui::MainApplication::New(renderer);
+    amain->Prepare();
     amain->Show();
     PRINTF("INFO: cleaning up...\n");
-    delete amain;
 
     SessionManager::dealloc();
     return 0;

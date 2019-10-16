@@ -10,26 +10,21 @@ namespace ui {
 
     MainLayout::MainLayout() : pu::ui::Layout() {
         this->SetBackgroundColor(theme.background);
-        this->topBarRect = new Rectangle(0, 0, 1280, 100, theme.hoverColor);
-        this->logo = new Image(14, 26, "romfs:/logo.png");
+        this->topBarRect = Rectangle::New(0, 0, 1280, 100, theme.hoverColor);
+        this->logo = Image::New(14, 26, "romfs:/logo.png");
         this->logo->SetWidth(111);
         this->logo->SetHeight(48);
-        this->topText = new TextBlock(600, 30, "loading...", 40);
+        this->topText = TextBlock::New(600, 30, "loading...", 40);
         this->topText->SetColor(theme.textColor);
-        this->comicMenu = new Menu(40, 120, 1200, theme.hoverColor, 120, 5);
-        this->comicMenu->AddItem(new MenuItem("fuck"));
-        this->Add(topBarRect);    
-        this->Add(logo);
-        this->Add(topText);
-        this->Add(comicMenu);
+        this->comicMenu = RichMenu::New(40, 120, 1200, theme.hoverColor, 120, 5);
+        //this->comicMenu->AddItem(RichMenuItem::New("fuck"));
+        this->Add(this->topBarRect);    
+        this->Add(this->logo);
+        this->Add(this->topText);
+        this->Add(this->comicMenu);
     }
-    MainLayout::~MainLayout() {
-        delete this->comicMenu;
-        delete this->topBarRect;
-        delete this->logo;
-        delete this->topText;
-    }
-    void MainLayout::onInput(u64 Down, u64 Up, u64 Held) {
+
+    void MainLayout::onInput(u64 Down, u64 Up, u64 Held, pu::ui::Touch Pos) {
         if((Down & KEY_PLUS) || (Down & KEY_MINUS)){
             mainApp->Close();
         }
@@ -88,7 +83,7 @@ namespace ui {
             for(short i=0; i<+5; i++) {
                 if((i+this->section*5)<comics.size()) addComic(comics[i+this->section*5]);
             }
-        } else comicMenu->AddItem(new MenuItem("nothing found :/"));
+        } //else comicMenu->AddItem(RichMenuItem::New("nothing found :/"));
         this->comicMenu->SetSelectedIndex(0);
         std::string topStr, tmpString;
         tmpString = searchString;
@@ -163,10 +158,10 @@ namespace ui {
     }
     void MainLayout::addComic(model::comic Comic) {
         PRINTF("INFO: adding comic %s\n", Comic.id.c_str());;
-        MenuItem *item = new MenuItem(Comic.name);
-        item->SetColor(theme.textColor);
+        RichMenuItem::Ref item = RichMenuItem::New(Comic.name);
+        item->clr = theme.textColor;
         item->SetIcon(web::getPath(Comic, 1, true));
-        item->SetRichName(Comic.id);
+        item->richname = Comic.id;
         if(Comic.language != model::CLang::UNKNOWN) item->SetRichIcon(fs::getFlagPath(Comic.language));
         item->AddOnClick(std::bind(&MainLayout::onItemClick, this));
         this->comicMenu->AddItem(item);

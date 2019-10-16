@@ -8,16 +8,12 @@ namespace ui {
 
     ImageLayout::ImageLayout() : pu::ui::Layout() {
         this->SetBackgroundColor(theme.background);
-        this->image = new Image(0,0,"romfs:/shrek.png");
-        this->pageInfo = new TextBlock(5, 690, "?/?");
+        this->image = Image::New(0,0,"romfs:/shrek.png");
+        this->pageInfo = TextBlock::New(5, 690, "?/?");
         this->pageInfo->SetColor(theme.textColor);
         this->Add(this->image);
         this->Add(pageInfo);
         this->position = 1;
-    }
-    ImageLayout::~ImageLayout() {
-        delete this->image;
-        delete this->pageInfo;
     }
     void ImageLayout::loadComic() {
         this->position = 1;
@@ -62,7 +58,7 @@ namespace ui {
             mainApp->LoadLayout(mainApp->detailLayout);
         }
     }
-    void ImageLayout::onInput(u64 Down, u64 Up, u64 Held) {
+    void ImageLayout::onInput(u64 Down, u64 Up, u64 Held, pu::ui::Touch Pos) {
         if(Down & KEY_B) {
             mainApp->LoadLayout(mainApp->detailLayout);
         }
