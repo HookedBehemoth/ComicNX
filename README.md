@@ -1,8 +1,6 @@
 ComicNX
 =
-Shitty comic-browser for your Nintendo Switch.
-
-This uses my [Plutonium fork](https://github.com/HookedBehemoth/Plutonium) because I rescale Image-Elements on reloading an Image and menuitems should be rescalled and centered.
+NSFW comic-browser for your Nintendo Switch.
 
 Licensing
 =
