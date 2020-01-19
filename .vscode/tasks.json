@@ -6,7 +6,7 @@
         {
             "label": "make and send to main",
             "type": "shell",
-            "command": "make -j8 && nxlink -p ComicNX/ComicNX.nro -a 192.168.10.13 out/*.nro",
+            "command": "make -j8 && nxlink -p ComicNX.nro -a 192.168.10.13 out/*.nro",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -16,7 +16,7 @@
         {
             "label": "make and debug",
             "type": "shell",
-            "command": "make -j8 && nxlink -p ComicNX/ComicNX.nro -a 192.168.10.13 out/*.nro -s",
+            "command": "make -j8 && nxlink -p ComicNX.nro -a 192.168.10.13 out/*.nro -s",
             "group": {
                 "kind": "build",
                 "isDefault": true

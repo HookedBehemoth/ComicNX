@@ -3,7 +3,7 @@
 #include "nh/tag.hpp"
 #include "nh/lang.hpp"
 #include "nh/image.hpp"
-#include "web.hpp"
+#include "nh/theme.hpp"
 
 #include <switch/types.h>
 #include "json.hpp"
@@ -22,7 +22,7 @@ private:
     Language language;
 public:
     int id, mediaId;
-    u32 pages, favorites;
+    int pages, favorites;
     Comic() {};
     Comic(const nlohmann::json& json);
     MemImage loadCover() const;

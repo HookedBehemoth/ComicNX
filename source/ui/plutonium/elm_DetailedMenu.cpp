@@ -3,7 +3,7 @@
 
 namespace pu::ui::elm
 {
-    RichMenu::RichMenu(s32 X, s32 Y, s32 Width, Color OptionColor, s32 ItemSize, s32 ItemsToShow) : Element::Element()
+    RichMenu::RichMenu(size_t X, size_t Y, size_t Width, Color OptionColor, size_t ItemSize, size_t ItemsToShow) : Element::Element()
     {
         this->x = X;
         this->y = Y;
@@ -33,7 +33,7 @@ namespace pu::ui::elm
         return this->x;
     }
 
-    void RichMenu::SetX(s32 X)
+    void RichMenu::SetX(size_t X)
     {
         this->x = X;
     }
@@ -43,7 +43,7 @@ namespace pu::ui::elm
         return this->y;
     }
 
-    void RichMenu::SetY(s32 Y)
+    void RichMenu::SetY(size_t Y)
     {
         this->y = Y;
     }
@@ -53,7 +53,7 @@ namespace pu::ui::elm
         return this->w;
     }
 
-    void RichMenu::SetWidth(s32 Width)
+    void RichMenu::SetWidth(size_t Width)
     {
         this->w = Width;
     }
@@ -63,22 +63,22 @@ namespace pu::ui::elm
         return (this->isize * this->ishow);
     }
 
-    s32 RichMenu::GetItemSize()
+    size_t RichMenu::GetItemSize()
     {
         return this->isize;
     }
 
-    void RichMenu::SetItemSize(s32 ItemSize)
+    void RichMenu::SetItemSize(size_t ItemSize)
     {
         this->isize = ItemSize;
     }
 
-    s32 RichMenu::GetNumberOfItemsToShow()
+    size_t RichMenu::GetNumberOfItemsToShow()
     {
         return this->ishow;
     }
 
-    void RichMenu::SetNumberOfItemsToShow(s32 ItemsToShow)
+    void RichMenu::SetNumberOfItemsToShow(size_t ItemsToShow)
     {
         this->ishow = ItemsToShow;
     }
@@ -147,12 +147,12 @@ namespace pu::ui::elm
         return this->itms[this->isel];
     }
 
-    s32 RichMenu::GetSelectedIndex()
+    size_t RichMenu::GetSelectedIndex()
     {
         return this->isel;
     }
 
-    void RichMenu::SetSelectedIndex(s32 Index)
+    void RichMenu::SetSelectedIndex(size_t Index)
     {
         if(this->itms.size() > Index)
         {
@@ -180,24 +180,24 @@ namespace pu::ui::elm
     {
         if(!this->itms.empty())
         {
-            s32 cx = X;
-            s32 cy = Y;
-            s32 cw = this->w;
-            s32 ch = this->isize;
-            s32 its = this->ishow;
+            size_t cx = X;
+            size_t cy = Y;
+            size_t cw = this->w;
+            size_t ch = this->isize;
+            size_t its = this->ishow;
             if(its > this->itms.size()) its = this->itms.size();
             if((its + this->fisel) > this->itms.size()) its = this->itms.size() - this->fisel;
             if(this->loadednames.empty()) ReloadItemRenders();
-            for(s32 i = this->fisel; i < (its + this->fisel); i++)
+            for(size_t i = this->fisel; i < (its + this->fisel); i++)
             {
-                s32 clrr = this->clr.R;
-                s32 clrg = this->clr.G;
-                s32 clrb = this->clr.B;
-                s32 nr = clrr - 70;
+                size_t clrr = this->clr.R;
+                size_t clrg = this->clr.G;
+                size_t clrb = this->clr.B;
+                size_t nr = clrr - 70;
                 if(nr < 0) nr = 0;
-                s32 ng = clrg - 70;
+                size_t ng = clrg - 70;
                 if(ng < 0) ng = 0;
-                s32 nb = clrb - 70;
+                size_t nb = clrb - 70;
                 if(nb < 0) nb = 0;
                 Color nclr(nr, ng, nb, this->clr.A);
                 auto loadedidx = i - this->fisel;
@@ -227,18 +227,18 @@ namespace pu::ui::elm
                 }
                 else Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
                 const nh::Comic& itm = this->itms[i];
-                s32 xh = render::GetTextureHeight(curname);
-                s32 tx = (cx + 25);
-                s32 ty;
+                size_t xh = render::GetTextureHeight(curname);
+                size_t tx = (cx + 25);
+                size_t ty;
                 if(itm.id == 0) ty = ((ch - xh) / 2) + cy;
                 else ty = (ch/3) - (xh/2) + cy;
                 if(itm.mediaId != 0)
                 {
                     float factor = (float)render::GetTextureHeight(curicon)/(float)render::GetTextureWidth(curicon);
-                    s32 icw = (this->isize - 10);
-                    s32 ich = icw;
-                    s32 icx = (cx + 25);
-                    s32 icy = (cy + 5);
+                    size_t icw = (this->isize - 10);
+                    size_t ich = icw;
+                    size_t icx = (cx + 25);
+                    size_t icy = (cy + 5);
                     tx = (icx + icw + 25);
                     if(factor < 1)
                     {
@@ -249,20 +249,20 @@ namespace pu::ui::elm
                         icw = icw/factor;
                         icx = icx+((this->isize-icw)/2);
                     }
-                    Drawer->RenderTexture(curicon, icx, icy, { -1, icw, ich, -1.0f });
+                    Drawer->RenderTexture(curicon, icx, icy, { -1, (s32)icw, (s32)ich, -1.0f });
                 }
                 if(itm.id)
                 {
-                    s32 rxh = render::GetTextureHeight(currichname);
-                    s32 rtx = tx;
-                    s32 rty = cy + (ch/3)*2 + ((ch/3) - rxh)/2;
+                    size_t rxh = render::GetTextureHeight(currichname);
+                    size_t rtx = tx;
+                    size_t rty = cy + (ch/3)*2 + ((ch/3) - rxh)/2;
                     if(itm.getLanguage() != nh::Language::UNKNOWN)
                     {
                         float rfactor = (float)render::GetTextureHeight(currichicon)/(float)render::GetTextureWidth(currichicon);
-                        s32 ricw = (ch/3);
-                        s32 rich = ricw;
-                        s32 ricx = rtx;
-                        s32 ricy = (cy + (ch/3)*2);
+                        size_t ricw = (ch/3);
+                        size_t rich = ricw;
+                        size_t ricx = rtx;
+                        size_t ricy = (cy + (ch/3)*2);
                         if(rfactor < 1)
                         {
                             rich = rich*rfactor;
@@ -274,7 +274,7 @@ namespace pu::ui::elm
                             ricx = ricx+((rich-ricw)/2);
                         }
                         rtx = ricx + ricw + 10;
-                        Drawer->RenderTexture(currichicon, ricx, ricy, { -1, ricw, rich, -1.0f });
+                        Drawer->RenderTexture(currichicon, ricx, ricy, { -1, (s32)ricw, (s32)rich, -1.0f });
                     }
                     Drawer->RenderTexture(currichname, rtx, rty);
                 }
@@ -283,23 +283,23 @@ namespace pu::ui::elm
             }
             if(this->ishow < this->itms.size())
             {
-                s32 sccr = this->scb.R;
-                s32 sccg = this->scb.G;
-                s32 sccb = this->scb.B;
-                s32 snr = sccr - 30;
+                size_t sccr = this->scb.R;
+                size_t sccg = this->scb.G;
+                size_t sccb = this->scb.B;
+                size_t snr = sccr - 30;
                 if(snr < 0) snr = 0;
-                s32 sng = sccg - 30;
+                size_t sng = sccg - 30;
                 if(sng < 0) sng = 0;
-                s32 snb = sccb - 30;
+                size_t snb = sccb - 30;
                 if(snb < 0) snb = 0;
                 Color sclr(snr, sng, snb, this->scb.A);
-                s32 scx = this->x + (this->w - 20);
-                s32 scy = this->y;
-                s32 scw = 20;
-                s32 sch = (this->ishow * this->isize);
+                size_t scx = this->x + (this->w - 20);
+                size_t scy = this->y;
+                size_t scw = 20;
+                size_t sch = (this->ishow * this->isize);
                 Drawer->RenderRectangleFill(this->scb, scx, scy, scw, sch);
-                s32 fch = ((this->ishow * sch) / this->itms.size());
-                s32 fcy = scy + (this->fisel * (sch / this->itms.size()));
+                size_t fch = ((this->ishow * sch) / this->itms.size());
+                size_t fcy = scy + (this->fisel * (sch / this->itms.size()));
                 Drawer->RenderRectangleFill(sclr, scx, fcy, scw, fch);
             }
             Drawer->RenderShadowSimple(cx, cy, cw, 5, 160);
@@ -321,16 +321,16 @@ namespace pu::ui::elm
             }
             if(!Pos.IsEmpty())
             {
-                s32 cx = this->x;
-                s32 cy = this->y;
-                s32 cw = this->w;
-                s32 ch = this->isize;
-                s32 its = this->ishow;
+                size_t cx = this->x;
+                size_t cy = this->y;
+                size_t cw = this->w;
+                size_t ch = this->isize;
+                size_t its = this->ishow;
                 if(its > this->itms.size()) its = this->itms.size();
                 if((its + this->fisel) > this->itms.size()) its = this->itms.size() - this->fisel;
-                for(s32 i = this->fisel; i < (this->fisel + its); i++)
+                for(size_t i = this->fisel; i < (this->fisel + its); i++)
                 {
-                    if(((cx + cw) > Pos.X) && (Pos.X > cx) && ((cy + ch) > Pos.Y) && (Pos.Y > cy))
+                    if(((s32)(cx + cw) > Pos.X) && (Pos.X > (s32)cx) && ((s32)(cy + ch) > Pos.Y) && (Pos.Y > (s32)cy))
                     {
                         this->dtouch = true;
                         this->previsel = this->isel;
@@ -387,7 +387,7 @@ namespace pu::ui::elm
                                 this->previsel = this->isel;
                                 this->isel++;
                                 (this->onselch)();
-                                if(!this->itms.empty()) for(s32 i = 0; i < this->itms.size(); i++)
+                                if(!this->itms.empty()) for(size_t i = 0; i < this->itms.size(); i++)
                                 {
                                     if(i == this->isel) this->selfact = 0;
                                     else if(i == this->previsel) this->pselfact = 255;
@@ -436,7 +436,7 @@ namespace pu::ui::elm
                                 this->previsel = this->isel;
                                 this->isel--;
                                 (this->onselch)();
-                                if(!this->itms.empty()) for(s32 i = 0; i < this->itms.size(); i++)
+                                if(!this->itms.empty()) for(size_t i = 0; i < this->itms.size(); i++)
                                 {
                                     if(i == this->isel) this->selfact = 0;
                                     else if(i == this->previsel) this->pselfact = 255;
@@ -475,20 +475,24 @@ namespace pu::ui::elm
         this->loadedicons.clear();
         this->loadedrichnames.clear();
         this->loadedrichicons.clear();
-        s32 its = this->ishow;
+        size_t its = this->ishow;
         if(its > this->itms.size()) its = this->itms.size();
         if((its + this->fisel) > this->itms.size()) its = this->itms.size() - this->fisel;
-        for(s32 i = this->fisel; i < (its + this->fisel); i++)
+        for(size_t i = this->fisel; i < (its + this->fisel); i++)
         {
             /* name */
             auto strname = this->itms[i].toString();
             auto tex = render::RenderText(this->basefont, this->basefont_meme, strname, theme::text);
             this->loadednames.push_back(tex);
             /* icon */
-            auto img = itms[i].loadImage(i, true);
-            auto icontex = render::LoadJpegImage(img.memory, img.size);
+            auto img = itms[i].loadPreview();
+            if (img.size > 100) {
+                auto icontex = render::LoadJpegImage(img.memory, img.size);
+                this->loadedicons.push_back(icontex);
+            } else {
+                this->loadedicons.push_back(render::LoadImage("romfs:/shrek.png"));
+            }
             free(img.memory);
-            this->loadedicons.push_back(icontex);
             /* rich name */
             auto rstrname = std::to_string(this->itms[i].id);
             auto rtex = render::RenderText(this->richfont, this->richfont_meme, rstrname, theme::text);

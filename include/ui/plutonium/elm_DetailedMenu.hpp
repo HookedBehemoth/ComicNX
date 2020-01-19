@@ -23,20 +23,20 @@ namespace pu::ui::elm
     class RichMenu : public Element
     {
         public:
-            RichMenu(s32 X, s32 Y, s32 Width, Color OptionColor, s32 ItemSize, s32 ItemsToShow);
+            RichMenu(size_t X, size_t Y, size_t Width, Color OptionColor, size_t ItemSize, size_t ItemsToShow);
             PU_SMART_CTOR(RichMenu)
 
             s32 GetX();
-            void SetX(s32 X);
+            void SetX(size_t X);
             s32 GetY();
-            void SetY(s32 Y);
+            void SetY(size_t Y);
             s32 GetWidth();
-            void SetWidth(s32 Width);
+            void SetWidth(size_t Width);
             s32 GetHeight();
-            s32 GetItemSize();
-            void SetItemSize(s32 ItemSize);
-            s32 GetNumberOfItemsToShow();
-            void SetNumberOfItemsToShow(s32 ItemsToShow);
+            size_t GetItemSize();
+            void SetItemSize(size_t ItemSize);
+            size_t GetNumberOfItemsToShow();
+            void SetNumberOfItemsToShow(size_t ItemsToShow);
             Color GetColor();
             void SetColor(Color Color);
             Color GetOnFocusColor();
@@ -49,23 +49,23 @@ namespace pu::ui::elm
             void ClearItems();
             void SetCooldownEnabled(bool Cooldown);
             const nh::Comic& GetSelectedItem();
-            s32 GetSelectedIndex();
-            void SetSelectedIndex(s32 Index);
+            size_t GetSelectedIndex();
+            void SetSelectedIndex(size_t Index);
             void OnRender(render::Renderer::Ref &Drawer, s32 X, s32 Y);
             void OnInput(u64 Down, u64 Up, u64 Held, Touch Pos);
         private:
             void ReloadItemRenders();
             bool dtouch;
-            s32 x;
-            s32 y;
-            s32 w;
-            s32 isize;
-            s32 ishow;
-            s32 previsel;
-            s32 fisel;
-            s32 isel;
-            s32 pselfact;
-            s32 selfact;
+            size_t x;
+            size_t y;
+            size_t w;
+            size_t isize;
+            size_t ishow;
+            size_t previsel;
+            size_t fisel;
+            size_t isel;
+            size_t pselfact;
+            size_t selfact;
             Color scb;
             Color clr;
             Color fcs;

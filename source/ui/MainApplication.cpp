@@ -23,6 +23,7 @@ namespace ui {
         Result rc;
         bool pcactive = false;
         rc = pctlIsRestrictionEnabled(&pcactive);
+        pctlExit();
         if(R_SUCCEEDED(rc) && pcactive) {
             rc = pctlauthShow(true);
             if(R_SUCCEEDED(rc)) {
@@ -34,7 +35,6 @@ namespace ui {
             allow();
         }
         printf("rc: 0x%x\npcactive: %s\n", rc, pcactive ? "true" : "false");
-        pctlExit();
     }
 
     void MainApplication::allow() {

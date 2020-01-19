@@ -1,12 +1,14 @@
 #include "nh/comic.hpp"
-#include "utl.hpp"
 #include "nh/lang.hpp"
+#include "utl.hpp"
+#include "web.hpp"
 
 #include <chrono>
 
 namespace nh {
 
 Comic::Comic(const nlohmann::json& json) {
+    printf("creating comic...\n");
     this->id = getInt(json["id"]);
     this->mediaId = getInt(json["media_id"]);
     this->name = getString(json["title"]["pretty"]);
@@ -34,17 +36,17 @@ Comic::Comic(const nlohmann::json& json) {
 }
 
 MemImage Comic::loadCover() const {
-    return web::getFile(web::FORMAT_THUMB + std::to_string(this->mediaId) + "/cover" + this->cover.getExtension());
+    return web::getFile(FORMAT_THUMB + std::to_string(this->mediaId) + "/cover" + this->cover.getExtension());
 }
 
 MemImage Comic::loadPreview() const {
-    return web::getFile(web::FORMAT_THUMB + std::to_string(this->mediaId) + "/thumb" + this->cover.getExtension());
+    return web::getFile(FORMAT_THUMB + std::to_string(this->mediaId) + "/thumb" + this->cover.getExtension());
 }
 
 MemImage Comic::loadImage(int page, bool thumb) const {
     std::string url = thumb ?
-        web::FORMAT_THUMB + std::to_string(this->mediaId) + "/" + std::to_string(page) + "t" + this->images[page-1].getExtension():
-        web::FORMAT_IMG + std::to_string(this->mediaId) + "/" + std::to_string(page) + this->images[page-1].getExtension();
+        FORMAT_THUMB + std::to_string(this->mediaId) + "/" + std::to_string(page + 1) + "t" + this->images[page].getExtension():
+        FORMAT_IMG + std::to_string(this->mediaId) + "/" + std::to_string(page + 1) + this->images[page].getExtension();
     return web::getFile(url);
 }
 

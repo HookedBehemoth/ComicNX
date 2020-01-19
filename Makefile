@@ -52,7 +52,7 @@ ROMFS		:=	romfs
 #---------------------------------------------------------------------------------
 ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
-CFLAGS	:=	-g -Wall -O2 -ffunction-sections -fpermissive \
+CFLAGS	:=	-g -Wall -Werror -O2 -ffunction-sections -fpermissive \
 			$(ARCH) $(DEFINES) \
 			-DDEBUG
 

@@ -2,6 +2,7 @@
 #include "MainApplication.hpp"
 #include "utl.hpp"
 #include "nh/theme.hpp"
+#include "nh/web.hpp"
 
 namespace ui {
     extern MainApplication *mainApp;
@@ -72,7 +73,7 @@ namespace ui {
         printf("DEBUG: %d/%d\n", page, maxPage);
         comicMenu->ClearItems();
         for(const auto& comic: comics) {
-            printf("INFO: adding comic %s\n", comic.toString().c_str());;
+            printf("INFO: adding comic %s, %d, %d, %d\n", comic.toString().c_str(), comic.id, comic.mediaId, comic.pages);
             this->comicMenu->AddItem(comic);
         }
         this->comicMenu->SetSelectedIndex(0);
@@ -105,7 +106,7 @@ namespace ui {
     }
 
     void MainLayout::loadPage() {
-        std::string url = web::FORMAT_API;
+        std::string url = FORMAT_API;
         char seperator = '?';
         switch(this->searchMode) {
         case ALL:

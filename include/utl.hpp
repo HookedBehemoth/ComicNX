@@ -5,5 +5,5 @@
 #include <string>
 
 bool canSwkbd();
-u64 getInt(const nlohmann::json::value_type &idValue);
-std::string getString(const nlohmann::json::value_type &strValue);
+u64 getInt(const nlohmann::json &idValue);
+std::string getString(const nlohmann::json &strValue);

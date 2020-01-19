@@ -16,7 +16,7 @@ std::string toString(Language language) {
 }
 
 std::string getFlag(Language language) {
-    return "romfs:/" + LanguageStrings[language] + ".png";
+    return "romfs:/" + LanguageStrings[language % 4] + ".png";
 }
 
 };

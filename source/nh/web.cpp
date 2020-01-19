@@ -68,6 +68,7 @@ std::vector<nh::Comic> getComics(const std::string &url, int &count) {
 }
 
 MemImage getFile(const std::string &url) {
+    printf("downloading file from %s...\n", url.c_str());
     return download<MemImage>(url, MemWrite);
 }
 

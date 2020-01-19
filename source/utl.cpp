@@ -14,9 +14,10 @@ bool canSwkbd() {
     return true;
 }
 
-u64 getInt(const nlohmann::json::value_type &idValue) {
+u64 getInt(const nlohmann::json &idValue) {
     switch(idValue.type()){
         case nlohmann::detail::value_t::string:
+            printf("int: %d\n", std::stoi(idValue.get<std::string>()));
             return std::stoi(idValue.get<std::string>());
             break;
         case nlohmann::detail::value_t::number_integer:
@@ -25,12 +26,16 @@ u64 getInt(const nlohmann::json::value_type &idValue) {
             break;
         default: break;
     }
+    printf("int: -1\n");
     return -1;
 }
 
-std::string getString(const nlohmann::json::value_type &strValue) {
-    if (strValue.is_string())
-        return strValue.get<std::string>();
-    else
-        return "";
+std::string getString(const nlohmann::json &strValue) {
+    if (strValue.is_string()) {
+        auto val = strValue.get<std::string>();
+        printf("str: %s\n", val.c_str());
+        return val;
+    }
+    printf("str:\n");
+    return "";
 }
