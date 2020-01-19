@@ -19,4 +19,4 @@ std::string getFlag(Language language) {
     return "romfs:/" + LanguageStrings[language % 4] + ".png";
 }
 
-};
+}

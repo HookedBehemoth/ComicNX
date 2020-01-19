@@ -3,15 +3,9 @@
 
 namespace pu::ui::elm
 {
-    RichMenu::RichMenu(size_t X, size_t Y, size_t Width, Color OptionColor, size_t ItemSize, size_t ItemsToShow) : Element::Element()
+    RichMenu::RichMenu(size_t X, size_t Y, size_t Width, Color OptionColor, size_t ItemSize, size_t ItemsToShow) : Element::Element(), x(X), y(Y), w(Width), isize(ItemSize), ishow(ItemsToShow), clr(OptionColor)
     {
-        this->x = X;
-        this->y = Y;
-        this->w = Width;
-        this->clr = OptionColor;
         this->scb = { 110, 110, 110, 255 };
-        this->isize = ItemSize;
-        this->ishow = ItemsToShow;
         this->previsel = 0;
         this->isel = 0;
         this->fisel = 0;
@@ -19,7 +13,6 @@ namespace pu::ui::elm
         this->pselfact = 0;
         this->onselch = [&](){};
         this->icdown = false;
-        this->dtouch = false;
         this->fcs = { 40, 40, 40, 255 };
         this->basestatus = 0;
         this->basefont = render::LoadDefaultFont(ItemSize/3);
@@ -131,10 +124,13 @@ namespace pu::ui::elm
     void RichMenu::ClearItems()
     {
         this->itms.clear();
-        this->loadednames.clear();
-        this->loadedicons.clear();
-        this->loadedrichnames.clear();
-        this->loadedrichicons.clear();
+        for (auto& [i0,i1,i2,i3]: this->ntexs) {
+            render::DeleteTexture(i0);
+            render::DeleteTexture(i1);
+            render::DeleteTexture(i2);
+            render::DeleteTexture(i3);
+        }
+        this->ntexs.clear();
     }
 
     void RichMenu::SetCooldownEnabled(bool Cooldown)
@@ -154,23 +150,16 @@ namespace pu::ui::elm
 
     void RichMenu::SetSelectedIndex(size_t Index)
     {
-        if(this->itms.size() > Index)
+        if(this->itms.size() > Index && this->ntexs.size() > (Index % this->ishow))
         {
             this->isel = Index;
             this->fisel = 0;
-            if(this->isel > 0)
-            {
-                u32 div = (this->itms.size() + this->ishow - 1) / this->ishow;
-                for(u32 i = 0; i < div; i++)
-                {
-                    if((this->ishow * i) > this->isel)
-                    {
-                        this->fisel = this->ishow * (i - 1);
-                        break;
-                    }
-                }
-            }
-            ReloadItemRenders();
+            if(this->isel >= (this->itms.size() - this->ishow)) this->fisel = this->itms.size() - this->ishow;
+            else if(this->isel < this->ishow) this->fisel = 0;
+            else this->fisel = this->isel;
+
+            for(size_t i = this->fisel; i < (this->ishow + this->fisel); i++)
+                ReloadItemRender(i);
             this->selfact = 255;
             this->pselfact = 0;
         }
@@ -187,7 +176,13 @@ namespace pu::ui::elm
             size_t its = this->ishow;
             if(its > this->itms.size()) its = this->itms.size();
             if((its + this->fisel) > this->itms.size()) its = this->itms.size() - this->fisel;
-            if(this->loadednames.empty()) ReloadItemRenders();
+            if(this->ntexs.empty()) {
+                for (size_t i = this->fisel; i < (its + this->fisel); i++) {
+                    std::tuple<render::NativeTexture,render::NativeTexture,render::NativeTexture,render::NativeTexture> pair = std::make_tuple(nullptr, nullptr, nullptr, nullptr);
+                    this->ntexs.push_back(pair);
+                    this->ReloadItemRender(i);
+                }
+            }
             for(size_t i = this->fisel; i < (its + this->fisel); i++)
             {
                 size_t clrr = this->clr.R;
@@ -200,11 +195,7 @@ namespace pu::ui::elm
                 size_t nb = clrb - 70;
                 if(nb < 0) nb = 0;
                 Color nclr(nr, ng, nb, this->clr.A);
-                auto loadedidx = i - this->fisel;
-                auto curname = this->loadednames[loadedidx];
-                auto curicon = this->loadedicons[loadedidx];
-                auto currichname = this->loadedrichnames[loadedidx];
-                auto currichicon = this->loadedrichicons[loadedidx];
+                auto& [curname,curicon,currichname,currichicon] = this->ntexs[i%this->ishow];
                 if(this->isel == i)
                 {
                     Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
@@ -308,199 +299,134 @@ namespace pu::ui::elm
 
     void RichMenu::OnInput(u64 Down, u64 Up, u64 Held, Touch Pos)
     {
-        if(!this->itms.empty())
+        if(this->itms.empty())
+            return;
+
+        if(basestatus == 1)
         {
-            if(basestatus == 1)
+            auto curtime = std::chrono::steady_clock::now();
+            auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(curtime - basetime).count();
+            if(diff >= 150)
             {
-                auto curtime = std::chrono::steady_clock::now();
-                auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(curtime - basetime).count();
-                if(diff >= 150)
+                basestatus = 2;
+            }
+        }
+
+        if((Down & KEY_DDOWN) || (Down & KEY_LSTICK_DOWN) || (Held & KEY_RSTICK_DOWN))
+        {
+            bool move = true;
+            if(Held & KEY_RSTICK_DOWN)
+            {
+                move = false;
+                if(basestatus == 0)
                 {
-                    basestatus = 2;
+                    basetime = std::chrono::steady_clock::now();
+                    basestatus = 1;
+                }
+                else if(basestatus == 2)
+                {
+                    basestatus = 0;
+                    move = true;
                 }
             }
-            if(!Pos.IsEmpty())
-            {
-                size_t cx = this->x;
-                size_t cy = this->y;
-                size_t cw = this->w;
-                size_t ch = this->isize;
-                size_t its = this->ishow;
-                if(its > this->itms.size()) its = this->itms.size();
-                if((its + this->fisel) > this->itms.size()) its = this->itms.size() - this->fisel;
-                for(size_t i = this->fisel; i < (this->fisel + its); i++)
-                {
-                    if(((s32)(cx + cw) > Pos.X) && (Pos.X > (s32)cx) && ((s32)(cy + ch) > Pos.Y) && (Pos.Y > (s32)cy))
-                    {
-                        this->dtouch = true;
-                        this->previsel = this->isel;
-                        this->isel = i;
+            if(move) {
+                if(this->isel < (this->itms.size() - 1)) {
+                    if((this->isel - this->fisel) == (this->ishow - 1)) {
+                        this->fisel++;
+                        this->isel++;
                         (this->onselch)();
-                        if(i == this->isel) this->selfact = 255;
-                        else if(i == this->previsel) this->pselfact = 0;
-                        break;
+                        ReloadItemRender(this->isel);
+                    } else {
+                        this->previsel = this->isel;
+                        this->isel++;
+                        (this->onselch)();
+                        if(!this->itms.empty()) for(size_t i = 0; i < this->itms.size(); i++)
+                        {
+                            if(i == this->isel) this->selfact = 0;
+                            else if(i == this->previsel) this->pselfact = 255;
+                        }
                     }
-                    cy += this->isize;
+                } else {
+                    this->isel = 0;
+                    this->fisel = 0;
+                    if(this->itms.size() > this->ishow) {
+                        for(size_t i = this->fisel; i < (this->ishow + this->fisel); i++)
+                            ReloadItemRender(i);
+                    }
                 }
             }
-            else if(this->dtouch)
-            {
-                if((this->selfact >= 255) && (this->pselfact <= 0))
-                {
-                    if(this->icdown) this->icdown = false;
-                    else (this->onclick)();
-                    this->dtouch = false;
+        } else if((Down & KEY_DUP) || (Down & KEY_LSTICK_UP) || (Held & KEY_RSTICK_UP)) {
+            bool move = true;
+            if(Held & KEY_RSTICK_UP) {
+                move = false;
+                if(basestatus == 0) {
+                    basetime = std::chrono::steady_clock::now();
+                    basestatus = 1;
+                }
+                else if(basestatus == 2) {
+                    basestatus = 0;
+                    move = true;
                 }
             }
-            else
-            {
-                if((Down & KEY_DDOWN) || (Down & KEY_LSTICK_DOWN) || (Held & KEY_RSTICK_DOWN))
-                {
-                    bool move = true;
-                    if(Held & KEY_RSTICK_DOWN)
-                    {
-                        move = false;
-                        if(basestatus == 0)
-                        {
-                            basetime = std::chrono::steady_clock::now();
-                            basestatus = 1;
-                        }
-                        else if(basestatus == 2)
-                        {
-                            basestatus = 0;
-                            move = true;
+            if(move) {
+                if(this->isel > 0) {
+                    if(this->isel == this->fisel) {
+                        this->fisel--;
+                        this->isel--;
+                        (this->onselch)();
+                        ReloadItemRender(this->isel);
+                    } else {
+                        this->previsel = this->isel;
+                        this->isel--;
+                        (this->onselch)();
+                        if(!this->itms.empty()) for(size_t i = 0; i < this->itms.size(); i++) {
+                            if(i == this->isel) this->selfact = 0;
+                            else if(i == this->previsel) this->pselfact = 255;
                         }
                     }
-                    if(move)
-                    {
-                        if(this->isel < (this->itms.size() - 1))
-                        {
-                            if((this->isel - this->fisel) == (this->ishow - 1))
-                            {
-                                this->fisel++;
-                                this->isel++;
-                                (this->onselch)();
-                                ReloadItemRenders();
-                            }
-                            else
-                            {
-                                this->previsel = this->isel;
-                                this->isel++;
-                                (this->onselch)();
-                                if(!this->itms.empty()) for(size_t i = 0; i < this->itms.size(); i++)
-                                {
-                                    if(i == this->isel) this->selfact = 0;
-                                    else if(i == this->previsel) this->pselfact = 255;
-                                }
-                                ReloadItemRenders();
-                            }
-                        }
-                        else
-                        {
-                            this->isel = 0;
-                            this->fisel = 0;
-                            ReloadItemRenders();
-                        }
+                } else {
+                    this->isel = this->itms.size() - 1;
+                    this->fisel = 0;
+                    if(this->itms.size() > this->ishow) {
+                        this->fisel = this->itms.size() - this->ishow;
+                        for(size_t i = this->fisel; i < (this->ishow + this->fisel); i++)
+                            ReloadItemRender(i);
                     }
                 }
-                else if((Down & KEY_DUP) || (Down & KEY_LSTICK_UP) || (Held & KEY_RSTICK_UP))
-                {
-                    bool move = true;
-                    if(Held & KEY_RSTICK_UP)
-                    {
-                        move = false;
-                        if(basestatus == 0)
-                        {
-                            basetime = std::chrono::steady_clock::now();
-                            basestatus = 1;
-                        }
-                        else if(basestatus == 2)
-                        {
-                            basestatus = 0;
-                            move = true;
-                        }
-                    }
-                    if(move)
-                    {
-                        if(this->isel > 0)
-                        {
-                            if(this->isel == this->fisel)
-                            {
-                                this->fisel--;
-                                this->isel--;
-                                (this->onselch)();
-                                ReloadItemRenders();
-                            }
-                            else
-                            {
-                                this->previsel = this->isel;
-                                this->isel--;
-                                (this->onselch)();
-                                if(!this->itms.empty()) for(size_t i = 0; i < this->itms.size(); i++)
-                                {
-                                    if(i == this->isel) this->selfact = 0;
-                                    else if(i == this->previsel) this->pselfact = 255;
-                                }
-                                ReloadItemRenders();
-                            }
-                        }
-                        else
-                        {
-                            this->isel = this->itms.size() - 1;
-                            this->fisel = 0;
-                            if(this->itms.size() >= this->ishow) this->fisel = this->itms.size() - this->ishow;
-                            ReloadItemRenders();
-                        }
-                    }
-                }
-                else
-                {
-                        if(Down & KEY_A)
-                        {
-                            if(this->icdown) this->icdown = false;
-                            else (this->onclick)();
-                        }
-                }
+            }
+        } else {
+            if(Down & KEY_A) {
+                if(this->icdown) this->icdown = false;
+                else (this->onclick)();
             }
         }
     }
     
-    void RichMenu::ReloadItemRenders()
+    void RichMenu::ReloadItemRender(int i)
     {
-        for(u32 i = 0; i < this->loadednames.size(); i++) render::DeleteTexture(this->loadednames[i]);
-        for(u32 i = 0; i < this->loadedicons.size(); i++) render::DeleteTexture(this->loadedicons[i]);
-        for(u32 i = 0; i < this->loadedrichnames.size(); i++) render::DeleteTexture(this->loadedrichnames[i]);
-        for(u32 i = 0; i < this->loadedrichicons.size(); i++) render::DeleteTexture(this->loadedrichnames[i]);
-        this->loadednames.clear();
-        this->loadedicons.clear();
-        this->loadedrichnames.clear();
-        this->loadedrichicons.clear();
-        size_t its = this->ishow;
-        if(its > this->itms.size()) its = this->itms.size();
-        if((its + this->fisel) > this->itms.size()) its = this->itms.size() - this->fisel;
-        for(size_t i = this->fisel; i < (its + this->fisel); i++)
-        {
-            /* name */
-            auto strname = this->itms[i].toString();
-            auto tex = render::RenderText(this->basefont, this->basefont_meme, strname, theme::text);
-            this->loadednames.push_back(tex);
-            /* icon */
-            auto img = itms[i].loadPreview();
-            if (img.size > 100) {
-                auto icontex = render::LoadJpegImage(img.memory, img.size);
-                this->loadedicons.push_back(icontex);
-            } else {
-                this->loadedicons.push_back(render::LoadImage("romfs:/shrek.png"));
-            }
-            free(img.memory);
-            /* rich name */
-            auto rstrname = std::to_string(this->itms[i].id);
-            auto rtex = render::RenderText(this->richfont, this->richfont_meme, rstrname, theme::text);
-            this->loadedrichnames.push_back(rtex);
-            /* rich icon */
-            auto rstricon = nh::Lang::getFlag(itms[i].getLanguage());
-            auto ricontex = render::LoadImage(rstricon);
-            this->loadedrichicons.push_back(ricontex);
+        printf("itm: %d, size: %ld\n", i, this->ntexs.size());
+        auto& [i0,i1,i2,i3] = this->ntexs[i%this->ishow];
+        render::DeleteTexture(i0);
+        render::DeleteTexture(i1);
+        render::DeleteTexture(i2);
+        render::DeleteTexture(i3);
+
+        /* name */
+        i0 = render::RenderText(this->basefont, basefont_meme, this->itms[i].toString(), theme::text);
+
+        /* icon */
+        auto img = itms[i].loadPreview();
+        if (img.size > 0) {
+            i1 = render::LoadJpegImage(img.memory, img.size);
+        } else {
+            i1 = render::LoadImage("romfs:/shrek.png");
         }
+        if (img.memory) free(img.memory);
+
+        /* rich name */
+        i2 = render::RenderText(this->richfont, this->richfont_meme, std::to_string(this->itms[i].id), theme::text);
+
+        /* rich icon */
+        i3 = render::LoadImage(nh::Lang::getFlag(itms[i].getLanguage()));
     }
 }

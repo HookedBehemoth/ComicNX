@@ -54,8 +54,7 @@ namespace pu::ui::elm
             void OnRender(render::Renderer::Ref &Drawer, s32 X, s32 Y);
             void OnInput(u64 Down, u64 Up, u64 Held, Touch Pos);
         private:
-            void ReloadItemRenders();
-            bool dtouch;
+            void ReloadItemRender(int i);
             size_t x;
             size_t y;
             size_t w;
@@ -75,13 +74,7 @@ namespace pu::ui::elm
             std::function<void()> onclick;
             std::function<void()> onselch;
             std::vector<nh::Comic> itms;
-            render::NativeFont basefont;
-            render::NativeFont richfont;
-            render::NativeFont basefont_meme;
-            render::NativeFont richfont_meme;
-            std::vector<render::NativeTexture> loadednames;
-            std::vector<render::NativeTexture> loadedicons;
-            std::vector<render::NativeTexture> loadedrichnames;
-            std::vector<render::NativeTexture> loadedrichicons;
+            render::NativeFont basefont, richfont, basefont_meme, richfont_meme;
+            std::vector<std::tuple<render::NativeTexture,render::NativeTexture,render::NativeTexture,render::NativeTexture>> ntexs;
     };
 }

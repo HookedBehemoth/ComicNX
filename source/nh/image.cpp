@@ -18,7 +18,6 @@ Image::Image(const nlohmann::json &json) {
 }
 
 std::string Image::getExtension() const {
-    return ".jpg";
     printf("getting ext for %d\n", this->type);
     switch (this->type) {
     case JPEG:

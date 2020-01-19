@@ -53,10 +53,9 @@ namespace ui {
 
     void DetailLayout::showComicDetail() {
         this->tagMenu->SetCooldownEnabled(true);
-        this->tagMenu->SetSelectedIndex(0);
         printf("INFO: setting local comic...\n");
         this->title->SetText(comic.toString());
-        auto img = comic.loadImage(1);
+        auto img = comic.loadCover();
         this->cover->SetJpegImage(img.memory, img.size);
         free(img.memory);
         this->tagMenu->ClearItems();

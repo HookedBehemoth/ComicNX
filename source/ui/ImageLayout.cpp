@@ -17,16 +17,16 @@ namespace ui {
         this->pageInfo->SetColor(theme::text);
         this->Add(this->image);
         this->Add(pageInfo);
-        this->position = 1;
+        this->position = 0;
     }
 
     void ImageLayout::loadComic() {
-        this->position = 1;
+        this->position = 0;
         showImage();
     }
 
     void ImageLayout::loadComicEnd() {
-        this->position = comic.pages;
+        this->position = comic.pages - 1;
         showImage();
     }
 
@@ -37,7 +37,7 @@ namespace ui {
         this->imgHeight = this->image->GetHeight();
         this->imgWidth = this->image->GetWidth();
         fixLayout();
-        this->pageInfo->SetText(std::to_string(position) + "/" + std::to_string(comic.pages));
+        this->pageInfo->SetText(std::to_string(position+1) + "/" + std::to_string(comic.pages));
     }
 
     void ImageLayout::fixLayout() {
@@ -60,7 +60,7 @@ namespace ui {
     }
 
     void ImageLayout::next(){
-        if(this->position < comic.pages){
+        if(this->position < (comic.pages - 1)){
             this->position++;
             showImage();
         } else {
@@ -69,7 +69,7 @@ namespace ui {
     }
 
     void ImageLayout::prev(){
-        if(this->position > 1){
+        if(this->position > 0){
             this->position--;
             showImage();
         } else {
