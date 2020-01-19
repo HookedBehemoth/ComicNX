@@ -1,7 +1,5 @@
 #include "MainApplication.hpp"
-#include "model.hpp"
 
-extern model::theme theme;
 namespace ui {
     MainApplication *mainApp;
 
@@ -35,14 +33,14 @@ namespace ui {
         } else {
             allow();
         }
-        printf("rc: %d\npcactive: %s", rc, pcactive ? "true" : "false");
+        printf("rc: 0x%x\npcactive: %s\n", rc, pcactive ? "true" : "false");
         pctlExit();
     }
 
     void MainApplication::allow() {
-        PRINTF("INFO: loading layout: mainLayout\n");
+        printf("INFO: loading layout: mainLayout\n");
         this->LoadLayout(this->mainLayout);
-        PRINTF("INFO: loading page\n");
+        printf("INFO: loading page\n");
         this->mainLayout->loadPage();
     }
 }

@@ -1,0 +1,12 @@
+#pragma once
+
+#include <pu/ui/ui_Types.hpp>
+
+namespace theme {
+
+static const pu::ui::Color back = { 0x0d, 0x0d, 0x0d, 0xff };
+static const pu::ui::Color hover = { 0x1f, 0x1f, 0x1f, 0xff };
+static const pu::ui::Color tag = { 0x66, 0x66, 0x66, 0xff };
+static const pu::ui::Color text = { 0xd9, 0xd9, 0xd9, 0xff };
+
+}

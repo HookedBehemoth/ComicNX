@@ -40,11 +40,11 @@ include $(DEVKITPRO)/libnx/switch_rules
 APP_AUTHOR	:=	Behemoth
 APP_VERSION	:=	1.2.0
 
-TARGET		:=	$(notdir $(CURDIR))
+TARGET		:=	ComicNX
 BUILD		:=	build
-DATA		:=	data
-SOURCES		:=	source source/ui source/ui/plutonium
-INCLUDES	:=	include include/rapidjson include/ui include/ui/plutonium
+#DATA		:=	data
+SOURCES		:=	source source/ui source/ui/plutonium source/nh
+INCLUDES	:=	include include/ui include/ui/plutonium include/nh
 ROMFS		:=	romfs
 
 #---------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ CXXFLAGS	:= $(CFLAGS) -std=gnu++17 -fno-rtti -fno-exceptions
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lSwurl -lcurl -lz -lmbedtls -lmbedx509 -lpu -lmbedcrypto -lnx -lfreetype -lSDL2_ttf \
+LIBS	:=	-lcurl -lz -lmbedtls -lmbedx509 -lpu -lmbedcrypto -lnx -lfreetype -lSDL2_ttf \
 			-lSDL2_mixer -lopusfile -lopus -lmodplug -lmpg123 -lvorbisidec -logg \
 			-lSDL2_gfx -lSDL2_image -lSDL2 -lEGL -lGLESv2 -lglapi -ldrm_nouveau \
 			-lpng -ljpeg -lwebp \
@@ -73,7 +73,7 @@ LIBS	:= -lSwurl -lcurl -lz -lmbedtls -lmbedx509 -lpu -lmbedcrypto -lnx -lfreetyp
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/Plutonium/Plutonium/Output $(CURDIR)/swurl/
+LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(CURDIR)/Plutonium/Plutonium/Output
 
 
 #---------------------------------------------------------------------------------
@@ -171,15 +171,13 @@ all: $(BUILD)
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@[ -d $(CURDIR)/out ] || mkdir -p $(CURDIR)/out
-	@$(MAKE) --no-print-directory -C Plutonium/Plutonium -f Makefile
-	@$(MAKE) --no-print-directory -C swurl -f Makefile
+	#@$(MAKE) --no-print-directory -C Plutonium/Plutonium -f Makefile
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@$(MAKE) --no-print-directory -C Plutonium/Plutonium -f Makefile clean
-	@$(MAKE) --no-print-directory -C swurl -f Makefile clean
+	#@$(MAKE) --no-print-directory -C Plutonium/Plutonium -f Makefile clean
 	@rm -fr $(BUILD) $(CURDIR)/out
 
 

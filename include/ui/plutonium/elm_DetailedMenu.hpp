@@ -12,12 +12,11 @@
 */
 
 #pragma once
-#include <pu/pu_String.hpp>
 #include <pu/ui/elm/elm_Element.hpp>
 #include <vector>
 #include <chrono>
 #include <functional>
-#include "web.hpp"
+#include "nh/comic.hpp"
 
 namespace pu::ui::elm
 {
@@ -46,10 +45,10 @@ namespace pu::ui::elm
             void SetScrollbarColor(Color Color);
             void SetCallback(std::function<void()> Callback);
             void SetOnSelectionChanged(std::function<void()> Callback);
-            void AddItem(model::comic *);
+            void AddItem(const nh::Comic& comic);
             void ClearItems();
             void SetCooldownEnabled(bool Cooldown);
-            model::comic * GetSelectedItem();
+            const nh::Comic& GetSelectedItem();
             s32 GetSelectedIndex();
             void SetSelectedIndex(s32 Index);
             void OnRender(render::Renderer::Ref &Drawer, s32 X, s32 Y);
@@ -75,9 +74,11 @@ namespace pu::ui::elm
             std::chrono::time_point<std::chrono::steady_clock> basetime;
             std::function<void()> onclick;
             std::function<void()> onselch;
-            std::vector<model::comic *> itms;
+            std::vector<nh::Comic> itms;
             render::NativeFont basefont;
             render::NativeFont richfont;
+            render::NativeFont basefont_meme;
+            render::NativeFont richfont_meme;
             std::vector<render::NativeTexture> loadednames;
             std::vector<render::NativeTexture> loadedicons;
             std::vector<render::NativeTexture> loadedrichnames;

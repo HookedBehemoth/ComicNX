@@ -1,12 +1,10 @@
 #pragma once
 
 #include <pu/Plutonium>
-#include "comicnx.hpp"
-#include "MainLayout.hpp"
-#include "DetailLayout.hpp"
-#include "ImageLayout.hpp"
-#include "PCTLFailLayout.hpp"
-#include "web.hpp"
+#include "ui/MainLayout.hpp"
+#include "ui/DetailLayout.hpp"
+#include "ui/ImageLayout.hpp"
+#include "ui/PCTLFailLayout.hpp"
 
 namespace ui {
     class MainApplication : public pu::ui::Application {

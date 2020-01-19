@@ -1,51 +1,30 @@
-#include <string>
+#include "ui/MainApplication.hpp"
+
 #include <switch.h>
-#include <stdio.h>
-#include <Swurl.hpp>
-#include "MainApplication.hpp"
-#include <thread>
-#include "comicnx.hpp"
-#include "web.hpp"
+#include <curl/curl.h>
 
-using namespace swurl;
-model::theme theme;
+static int nxsock;
 
-void init(){
+int main(int argc, char **argv) {
+    /* Initialize socket for all our curl needs and nxlink with debug */
+    socketInitializeDefault();
+	curl_global_init(CURL_GLOBAL_ALL);
     #ifdef DEBUG
-        socketInitializeDefault();
-        nxlinkStdio();
+        nxsock = nxlinkStdio();
     #endif
 
-    PRINTF("INFO: setting theme\n");
-    theme = *new model::theme;
-    theme.background = pu::ui::Color::FromHex("#0d0d0dff");
-    theme.hoverColor = pu::ui::Color::FromHex("#1f1f1fff");
-    theme.tagBg = pu::ui::Color::FromHex("#666666ff");
-    theme.textColor = pu::ui::Color::FromHex("#d9d9d9ff");
-
-    PRINTF("INFO: preparing swurl\n");
-    SessionManager::initialize();
-    SessionManager::userAgent = "gui-test/0.9.0";
-    SessionManager::requestHeaders.insert(
-        std::pair<std::string, std::string>(
-            "Cache-Control",
-            "no-cache"
-        )
-    );
-    SessionManager::onProgressChanged = web::onProgressChanged;
-    SessionManager::onCompleted = web::onCompleted;
-    SessionManager::onError = web::onError;
-}
-int main(int argc, char **argv) {
-    init();
-
-    PRINTF("INFO: starting application...\n");
+    printf("INFO: starting application...\n");
     auto renderer = pu::ui::render::Renderer::New(SDL_INIT_EVERYTHING, pu::ui::render::RendererInitOptions::RendererNoSound, pu::ui::render::RendererHardwareFlags);
     auto amain = ui::MainApplication::New(renderer);
     amain->Prepare();
     amain->Show();
-    PRINTF("INFO: cleaning up...\n");
+    printf("INFO: cleaning up...\n");
 
-    SessionManager::dealloc();
+    /* Close debug socket and exit sockets */
+    #ifdef DEBUG
+        close(nxsock);
+    #endif
+    curl_global_cleanup();
+    socketExit();
     return 0;
 }

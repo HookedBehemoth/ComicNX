@@ -1,6 +1,6 @@
 #include "ui/plutonium/elm_DetailedMenu.hpp"
+#include "nh/theme.hpp"
 
-extern model::theme theme;
 namespace pu::ui::elm
 {
     RichMenu::RichMenu(s32 X, s32 Y, s32 Width, Color OptionColor, s32 ItemSize, s32 ItemsToShow) : Element::Element()
@@ -22,8 +22,10 @@ namespace pu::ui::elm
         this->dtouch = false;
         this->fcs = { 40, 40, 40, 255 };
         this->basestatus = 0;
-        this->basefont = render::LoadDefaultFont((ItemSize/3));
+        this->basefont = render::LoadDefaultFont(ItemSize/3);
         this->richfont = render::LoadDefaultFont(ItemSize/4);
+        this->basefont_meme = render::LoadSharedFont(pu::ui::render::SharedFont::NintendoExtended ,ItemSize/3);
+        this->richfont_meme = render::LoadSharedFont(pu::ui::render::SharedFont::NintendoExtended ,ItemSize/4);
     }
 
     s32 RichMenu::GetX()
@@ -121,7 +123,7 @@ namespace pu::ui::elm
         this->onselch = Callback;
     }
 
-    void RichMenu::AddItem(model::comic * comic)
+    void RichMenu::AddItem(const nh::Comic& comic)
     {
         this->itms.push_back(comic);
     }
@@ -140,7 +142,7 @@ namespace pu::ui::elm
         this->icdown = Cooldown;
     }
 
-    model::comic * RichMenu::GetSelectedItem()
+    const nh::Comic& RichMenu::GetSelectedItem()
     {
         return this->itms[this->isel];
     }
@@ -224,13 +226,13 @@ namespace pu::ui::elm
                     else Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
                 }
                 else Drawer->RenderRectangleFill(this->clr, cx, cy, cw, ch);
-                model::comic * itm = this->itms[i];
+                const nh::Comic& itm = this->itms[i];
                 s32 xh = render::GetTextureHeight(curname);
                 s32 tx = (cx + 25);
                 s32 ty;
-                if(itm->id.empty()) ty = ((ch - xh) / 2) + cy;
+                if(itm.id == 0) ty = ((ch - xh) / 2) + cy;
                 else ty = (ch/3) - (xh/2) + cy;
-                if(!itm->mediaId.empty())
+                if(itm.mediaId != 0)
                 {
                     float factor = (float)render::GetTextureHeight(curicon)/(float)render::GetTextureWidth(curicon);
                     s32 icw = (this->isize - 10);
@@ -249,12 +251,12 @@ namespace pu::ui::elm
                     }
                     Drawer->RenderTexture(curicon, icx, icy, { -1, icw, ich, -1.0f });
                 }
-                if(!itm->id.empty())
+                if(itm.id)
                 {
                     s32 rxh = render::GetTextureHeight(currichname);
                     s32 rtx = tx;
                     s32 rty = cy + (ch/3)*2 + ((ch/3) - rxh)/2;
-                    if(itm->language != model::CLang::UNKNOWN)
+                    if(itm.getLanguage() != nh::Language::UNKNOWN)
                     {
                         float rfactor = (float)render::GetTextureHeight(currichicon)/(float)render::GetTextureWidth(currichicon);
                         s32 ricw = (ch/3);
@@ -479,19 +481,20 @@ namespace pu::ui::elm
         for(s32 i = this->fisel; i < (its + this->fisel); i++)
         {
             /* name */
-            auto strname = this->itms[i]->name;
-            auto tex = render::RenderText(this->basefont, strname, theme.textColor);
+            auto strname = this->itms[i].toString();
+            auto tex = render::RenderText(this->basefont, this->basefont_meme, strname, theme::text);
             this->loadednames.push_back(tex);
             /* icon */
-            auto stricon = web::getPath(*itms[i], 1, true);
-            auto icontex = render::LoadImage(stricon);
+            auto img = itms[i].loadImage(i, true);
+            auto icontex = render::LoadJpegImage(img.memory, img.size);
+            free(img.memory);
             this->loadedicons.push_back(icontex);
             /* rich name */
-            auto rstrname = this->itms[i]->id;
-            auto rtex = render::RenderText(this->richfont, rstrname, theme.textColor);
+            auto rstrname = std::to_string(this->itms[i].id);
+            auto rtex = render::RenderText(this->richfont, this->richfont_meme, rstrname, theme::text);
             this->loadedrichnames.push_back(rtex);
             /* rich icon */
-            auto rstricon = fs::getFlagPath(itms[i]->language);
+            auto rstricon = nh::Lang::getFlag(itms[i].getLanguage());
             auto ricontex = render::LoadImage(rstricon);
             this->loadedrichicons.push_back(ricontex);
         }

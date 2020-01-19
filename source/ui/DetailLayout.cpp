@@ -1,19 +1,18 @@
 #include "DetailLayout.hpp"
 #include "MainApplication.hpp"
 #include "utl.hpp"
-
-extern model::theme theme;
+#include "nh/theme.hpp"
 
 using namespace pu::ui::elm;
 namespace ui {
     extern MainApplication *mainApp;
-    extern model::tag searchTag;
-    extern model::comic comic;
+    extern nh::Tag searchTag;
+    extern nh::Comic comic;
 
     DetailLayout::DetailLayout() : pu::ui::Layout() {
-        this->SetBackgroundColor(theme.background);
-        this->topBarRect = Rectangle::New(0, 0, 1280, 100, theme.hoverColor);
-        this->focusRect = Rectangle::New(40, 120, 1200, 620, theme.hoverColor, 20);
+        this->SetBackgroundColor(theme::back);
+        this->topBarRect = Rectangle::New(0, 0, 1280, 100, theme::hover);
+        this->focusRect = Rectangle::New(40, 120, 1200, 620, theme::hover, 20);
         this->cover = Image::New(200, 200, "romfs:/shrek.png");
         this->logo = Image::New(14, 26, "romfs:/logo.png");
         this->logo->SetWidth(111);
@@ -21,13 +20,13 @@ namespace ui {
         this->title = TextBlock::New(600, 30, "loading...", 40);
         this->title->SetHorizontalAlign(HorizontalAlign::Center);
         this->title->SetVerticalAlign(VerticalAlign::Up);
-        this->title->SetColor(theme.textColor);
-        this->tagMenu = Menu::New(640, 130, 590, theme.textColor, 50, 10);
-        this->tagMenu->SetColor(theme.tagBg);
+        this->title->SetColor(theme::text);
+        this->tagMenu = Menu::New(640, 130, 590, theme::text, 50, 10);
+        this->tagMenu->SetColor(theme::tag);
         this->pages = TextBlock::New(640, 645, "loading...");
-        this->pages->SetColor(theme.textColor);
+        this->pages->SetColor(theme::text);
         this->uploadDate = TextBlock::New(640, 675, "loading...");
-        this->uploadDate->SetColor(theme.textColor);
+        this->uploadDate->SetColor(theme::text);
         this->Add(this->topBarRect);
         this->Add(this->focusRect);
         this->Add(this->cover);
@@ -51,22 +50,25 @@ namespace ui {
             mainApp->LoadLayout(mainApp->mainLayout);
         }
     }
+
     void DetailLayout::showComicDetail() {
         this->tagMenu->SetCooldownEnabled(true);
         this->tagMenu->SetSelectedIndex(0);
-        PRINTF("INFO: setting local comic...\n");
-        this->title->SetText(comic.name);
-        this->cover->SetImage(web::getPath(comic, 1, false));
+        printf("INFO: setting local comic...\n");
+        this->title->SetText(comic.toString());
+        auto img = comic.loadImage(1);
+        this->cover->SetJpegImage(img.memory, img.size);
+        free(img.memory);
         this->tagMenu->ClearItems();
-        for(auto tag: comic.tags) {
-            MenuItem::Ref item = MenuItem::New(tag.name);
-            item->SetColor(theme.textColor);
-            if(searchTag==tag) item->SetColor(theme.background);
+        for(auto tag: comic.getTags()) {
+            MenuItem::Ref item = MenuItem::New(tag.toString());
+            item->SetColor(theme::text);
+            if(searchTag==tag) item->SetColor(theme::back);
             item->AddOnClick(std::bind(&DetailLayout::onItemClick, this));
             this->tagMenu->AddItem(item);
         }
         this->pages->SetText(std::to_string(comic.pages) + " pages");
-        this->uploadDate->SetText(utl::getRelativeTime(comic.timestamp));
+        this->uploadDate->SetText(comic.getRelativeTime());
         this->title->SetX(640-(this->title->GetTextWidth()/2));
         if(this->cover->GetWidth() > 600) {
             this->cover->SetHeight((cover->GetHeight()*600)/this->cover->GetWidth());
@@ -79,12 +81,13 @@ namespace ui {
         this->cover->SetX(340-(cover->GetWidth()/2));
         this->cover->SetY(420-(cover->GetHeight()/2));
     }
+
     void DetailLayout::onItemClick() {
-        model::tag tag = comic.tags[this->tagMenu->GetSelectedIndex()];
-        PRINTF("INFO: clicked on %s\n", tag.name.c_str());
-        int opts = mainApp->CreateShowDialog("search Tag?" , "do you really want to search for: " + tag.name, {"OK", "Cancel"}, true);
+        const auto& tag = comic.getTags()[this->tagMenu->GetSelectedIndex()];
+        printf("INFO: clicked on %s\n", tag.getName().c_str());
+        int opts = mainApp->CreateShowDialog("search Tag?" , "do you really want to search for: " + tag.getName(), {"OK", "Cancel"}, true);
         if(opts == 0) {
-            PRINTF("INFO: searching for tag: %s: %d\n", tag.name.c_str(), tag.id);
+            printf("INFO: searching for tag: %s: %d\n", tag.getName().c_str(), tag.getId());
             mainApp->LoadLayout(mainApp->mainLayout);
             if(!(searchTag==tag)) {
                 searchTag = tag;

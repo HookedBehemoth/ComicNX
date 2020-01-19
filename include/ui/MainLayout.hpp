@@ -1,7 +1,6 @@
 #pragma once
 
 #include <pu/Plutonium>
-#include "model.hpp"
 #include "ui/plutonium/elm_DetailedMenu.hpp"
 
 using namespace pu::ui::elm;
@@ -25,9 +24,13 @@ namespace ui {
             Image::Ref logo;
             TextBlock::Ref topText;
             RichMenu::Ref comicMenu;
-            std::vector<model::comic> comics;
+            std::vector<nh::Comic> comics;
             std::string searchString;
-            model::searchMode mode = model::searchMode::ALL;
+            enum {
+                ALL,
+                SEARCH,
+                TAG
+            } searchMode = ALL;
             int page = 1, maxPage = 1;
             bool popular = false;
     };

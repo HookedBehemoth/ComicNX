@@ -20,7 +20,7 @@ namespace ui {
             s32 imgHeight;
             int position;
             bool isFlipped = false;
-            void setImage(std::string path);
+            void showImage();
             void fixLayout();
             Image::Ref image;
             TextBlock::Ref pageInfo;

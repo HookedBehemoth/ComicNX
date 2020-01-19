@@ -71,7 +71,8 @@
         "random": "cpp",
         "string": "cpp",
         "map": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "bit": "cpp"
     },
     "files.exclude": {
         "**/.git": true,
